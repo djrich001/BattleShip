@@ -11,9 +11,10 @@ from battleship import BattleshipGame
 
 
 debug = True
+cors_allowed_origins = 'http://192.168.0.14:8080'
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'GreatBigSecret'
-socketio = SocketIO(app)
+socketio = SocketIO(app,cors_allowed_origins = '*')#http://192.168.0.14:8080')
 message_history = []
 games = {}
 players = {}
