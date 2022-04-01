@@ -9,12 +9,10 @@ import unittest
 from battleship import Ship
 from battleship import BattleshipGame
 
-
 debug = True
-cors_allowed_origins = 'http://192.168.0.14:8080'
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'GreatBigSecret'
-socketio = SocketIO(app,cors_allowed_origins = '*')#http://192.168.0.14:8080')
+socketio = SocketIO(app,cors_allowed_origins = '*')
 message_history = []
 games = {}
 players = {}
@@ -166,9 +164,11 @@ def alert_ship_placement(msg, rm=None):
 def send_alert(message, rm=None):
   send({"type":"alert", "message":message}, room=rm)
 
-if __name__ == '__main__':
-  if debug == True:
-    socketio.run(app, host='0.0.0.0', port=8080, debug = True)
-  else:    
-    socketio.run(app, host='0.0.0.0', port=80)
+#if __name__ == '__main__':
+#  if debug == True:
+#    socketio.run(app, host='192.168.0.14', port=8080, debug = True) #0.0.0.0
+#  else:    
+#    socketio.run(app, host='192.168.0.14', port=80) #69.251.5.2
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=7000, debug=True)
