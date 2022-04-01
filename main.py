@@ -9,33 +9,38 @@ import unittest
 from battleship import Ship
 from battleship import BattleshipGame
 
+# Global variables
 debug = True
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'GreatBigSecret'
-socketio = SocketIO(app,cors_allowed_origins = '*')
+socketio = SocketIO(app,cors_allowed_origins = '*') # cors_allowed_origins set to * to allow access from any IP
 message_history = []
 games = {}
 players = {}
 player_numbers = {}
 player_ships = {}
 
-
+# Load the css sheet
 @app.route('/css/<path:path>', methods=['GET'])
 def send_css(path):
   return send_from_directory('css',path)
 
+# Attach the javascript to the program
 @app.route('/js/<path:path>', methods=['GET'])
 def send_js(path):
   return send_from_directory('js',path)
 
+# Set up main page to use the index.html file
 @app.route('/')
 def index():
   return render_template("./index.html")
 
+# Use socketio to join two users into a game - I think
 @socketio.on('join')
 def handleJoin(data):
   print("joined " + str(data))
 
+# Use socketio for initial connection
 @socketio.on('connect')
 def handleConnection():
   for msg in message_history:
@@ -46,6 +51,7 @@ def handleConnection():
     "message":"New Player Connected"}, 
     broadcast=True)
 
+# Handle interactions from player to game session
 @socketio.on('message')
 def handleMessage(msg):
   if check_valid_chat(msg):
@@ -58,12 +64,14 @@ def handleMessage(msg):
     handle_fire(msg)
   print(msg)
 
+# Check that data is in chat
 def check_valid_chat(msg):
   if "name" in msg and "message" in msg and "type" in msg:
     return ( msg["type"] == "chat" and "message" in msg 
       and msg["message"] != "" and len(msg["message"]) < 120
       and len(msg["name"]) <= 12 and len(msg["name"]) > 0 ) 
 
+# Send a message with a name
 def handle_chat(msg):
   msg["message"] = msg["message"].replace("<", " I'm am Haxxoer! ")
   msg["name"] = msg["name"].replace("<", " Great Haxxoer! ")
@@ -170,5 +178,6 @@ def send_alert(message, rm=None):
 #  else:    
 #    socketio.run(app, host='192.168.0.14', port=80) #69.251.5.2
 
+# Denote program as a flask app - setting host to 0.0.0.0 opens the app to the local network.
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7000, debug=True)
