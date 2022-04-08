@@ -14,6 +14,10 @@ class Ship():
         + str(self._len * self._offset + self._loc) + '<=' + str(boardWidth*boardHeight))
     self.assignCells(location)
 
+  # Getter for ship length
+  def get_len(self):
+    return self._len
+
   def calculateOffset(self, direction):
     if direction == "horizontal":
       self._offset = 1
@@ -69,7 +73,8 @@ class Carrier(Ship):
 
 
 class BattleshipGame():
-  shipMaxCount = 5
+  # Change from number of ships to budget
+  shipMaxSpaceCount = 17
   def __init__(self, player_id = "1"):
     self.current_player = 1
     self.players={}
@@ -81,14 +86,23 @@ class BattleshipGame():
     self.players[player_id] = player_id
 
   def addShip(self, player_id, ship):
+    # Get the current player ship list
     player = self.getPlayer(player_id)
+    
+    # Get the current budget in the ship list
+    spent = 0
+    for p in player:
+      spent += p.get_len()
+    
+    # Check if ship can be placed
     if (not self.checkIfColliding(player, ship)
-      and len(player) < self.shipMaxCount):
+      and (spent + ship.get_len()) <= self.shipMaxSpaceCount):
       player.append(ship)
       return True
-    if (len(player) >= self.shipMaxCount):
-      raise ValueError("Already have " + str(self.shipMaxCount) 
-        + " ships assigned")
+    # If ship cannot be placed, give error message
+    else:
+      raise ValueError(f"Max Budget is: {str(self.shipMaxSpaceCount)}"
+        + " Used budget is: {spent}. Adding the desired ship exceeds the max budget")
 
   def checkIfColliding(self, player, ship):
     for existingShip in player:
@@ -120,8 +134,21 @@ class BattleshipGame():
       return self.player2
 
   def ready(self):
-    return (len(self.player1) == self.shipMaxCount 
-      and len(self.player2) == self.shipMaxCount)
+    # Ensure that no more ships can be placed on either board
+    player1_spent = 0
+    player2_spent = 0
+    for s in self.player1:
+       player1_spent += s.get_len()
+    for s in self.player2:
+      player2_spent += s.get_len()
+    
+    # Return via boolean expression
+    return ((player1_spent + 2) > self.shipMaxSpaceCount
+      and (player2_spent + 2) > self.shipMaxSpaceCount)
+    
+    #return (len(self.player1) == self.shipMaxPlaceCount 
+    #  and len(self.player2) == self.shipMaxPlaceCount)
+
 
 
 class TestBattleship(unittest.TestCase):

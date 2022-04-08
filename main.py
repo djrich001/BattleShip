@@ -82,11 +82,12 @@ def handle_chat(msg):
     "type":"chat"})
 
 def handle_place_ship(msg):
-  if msg["ship"] in player_ships[msg["id"]]:
-    send_alert(msg["ship"].title()+" already placed.")
-    return
-  else:
-    player_ships[msg["id"]].append(msg["ship"])
+  #if msg["ship"] in player_ships[msg["id"]]:
+  #  send_alert(msg["ship"].title()+" already placed.")
+  #  return
+  #else:
+  # Place ship - removed check for ship type so duplicates can be used
+  #player_ships[msg["id"]].append(msg["ship"])
   try:
     player_id = msg["id"]
     player_no = player_numbers[player_id]
