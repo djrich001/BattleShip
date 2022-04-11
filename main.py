@@ -1,3 +1,7 @@
+"""Main file to run the Battleship game
+   sets up the flask server and links in
+   the needed files."""
+
 from flask import Flask, render_template, send_from_directory 
 from flask_socketio import SocketIO, send
 from flask_socketio import join_room, leave_room
@@ -172,5 +176,7 @@ def send_alert(message, rm=None):
   send({"type":"alert", "message":message}, room=rm)
 
 # Denote program as a flask app - setting host to 0.0.0.0 opens the app to the local network.
+# If program is run with python, it will use port 7000
+# If run using flask command, port will be 5000 as native to flask
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7000, debug=True)
