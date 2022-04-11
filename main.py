@@ -73,8 +73,7 @@ def check_valid_chat(msg):
 
 # Send a message with a name
 def handle_chat(msg):
-  msg["message"] = msg["message"].replace("<", " I'm am Haxxoer! ")
-  msg["name"] = msg["name"].replace("<", " Great Haxxoer! ")
+  """Function to handle the sending of chat messages"""
   send(msg, broadcast=True)
   message_history.append({
     "name":msg["name"], 
@@ -82,13 +81,10 @@ def handle_chat(msg):
     "type":"chat"})
 
 def handle_place_ship(msg):
-  #if msg["ship"] in player_ships[msg["id"]]:
-  #  send_alert(msg["ship"].title()+" already placed.")
-  #  return
-  #else:
-  # Place ship - removed check for ship type so duplicates can be used
-  #player_ships[msg["id"]].append(msg["ship"])
+  """Function to handle the placement of ships on the board
+     - changed to allow user to choose ships as they desire."""
   try:
+    # Get the player information based on input parameters
     player_id = msg["id"]
     player_no = player_numbers[player_id]
     game = games[players[player_id]]
@@ -96,10 +92,11 @@ def handle_place_ship(msg):
       int(msg["location"]), 
       type=msg["ship"], 
       direction=msg["direction"])
+    # Add the ship to the game instance under the appropriate player
     game.addShip(player_no, ship)
   except ValueError as e:
     send_alert(str(e))
-  else:
+  else: # If no exceptions arise, check if all ships have been placed
     alert_ship_placement(msg)
     send(msg)
     if game.ready():
@@ -142,6 +139,7 @@ def send_shot(rm, player_no, locations, hit, shot):
     "locations":locations, "hit":hit}, room=rm)
 
 def handle_fire(msg):
+  """Function to handle the firing mechanism"""
   try:
     player_id = msg["id"]
     player_no = player_numbers[player_id]
@@ -172,12 +170,6 @@ def alert_ship_placement(msg, rm=None):
 
 def send_alert(message, rm=None):
   send({"type":"alert", "message":message}, room=rm)
-
-#if __name__ == '__main__':
-#  if debug == True:
-#    socketio.run(app, host='192.168.0.14', port=8080, debug = True) #0.0.0.0
-#  else:    
-#    socketio.run(app, host='192.168.0.14', port=80) #69.251.5.2
 
 # Denote program as a flask app - setting host to 0.0.0.0 opens the app to the local network.
 if __name__ == '__main__':
