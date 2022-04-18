@@ -158,14 +158,14 @@ html {
   /*width: 150px;*/
   /*height: 40px;*/
 
-  margin: 10px;
-  border: 2px solid #cccccc;
-  border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
+  margin: 5px;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
 
   text-align: center;
-  line-height: 40px;
+  line-height: 20px;
 
   cursor: pointer;
 }
@@ -178,24 +178,66 @@ html {
   background: rgba(250, 10, 10, 0.7);
 }
 
-.carrier {
+.carrier{
+    background: rgba(36,36,36,1);
+}
+
+.carrierhover {
   background: rgba(36,36,36,1);
+  width: 145px;
+  height: 29px;
 }
 
 .battleship {
   background: rgba(49,49,49,0.9);
 }
 
+.battleshiphover {
+  background: rgba(49,49,49,0.9);
+  width: 116px;
+  height: 29px;
+}
+
 .cruiser {
   background: rgba(255,64,64,0.9);
+}
+
+.cruiserhover {
+  background: rgba(255,64,64,0.9);
+  width: 87px;
+  height: 29px;
+}
+
+.submarine {
+  background: rgba(100,100,100,0.7);
+}
+
+.submarinehover {
+  background: rgba(100,100,100,0.7);
+  width: 87px;
+  height: 29px;
 }
 
 .destroyer {
   background: rgba(81,81,81,0.7);
 }
 
-.frigate {
-  background: rgba(100,100,100,0.7);
+.destroyerhover {
+  background: rgba(81,81,81,0.7);
+  width: 58px;
+  height: 29px;
+}
+
+.ship{
+  visibility: hidden;
+  position: absolute;
+  transform: translate(0%,-105%);
+  border: 1px solid;
+  z-index: 2;
+}
+
+.grid-display{
+    display: flex
 }
 
 .one {

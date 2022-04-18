@@ -6,10 +6,17 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="css/battleship.css">
+  <link rel="shortcut icon" href="#" />
 <script type="text/javascript" src="js/battleship.js"></script>
+  <script type="text/javascript" src="js/buttonclick.js"></script>
 </head>
 <body>
   <div id="main">
+    <div class = "ship carrierhover"></div>
+    <div class = "ship battleshiphover"></div>
+    <div class = "ship cruiserhover">></div>
+    <div class = "ship submarinehover"></div>
+    <div class = "ship destroyerhover"></div>
     <div class="board">
       <div class="displays">
         <div class="top">
@@ -23,9 +30,12 @@
     <div class="panel">
       <div class="topPanel">
         <div class="layout">
-          <div class='buttons ship'>Carrier</div>
+          <div class='buttons button1'>Carrier</div>
+          <div class='buttons button2'>Battleship</div>
+          <div class='buttons button3'>Cruiser</div>
+          <div class='buttons button4'>Submarine</div>
+          <div class='buttons button5'>Destroyer</div>
           <div class='buttons orientation'>Horizontal</div>
-          <div class='buttons options'>Options</div>
         </div>
       </div>
       <div class='console'>

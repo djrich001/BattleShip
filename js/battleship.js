@@ -9,6 +9,7 @@ var shot_type = "normal";
 var boardWidth = 10; // Not currently a proper way to designate width.
 var active_orientation = "horz";
 var phase = "placement";
+var ship;
 ships = {
   "Carrier": 5, 
   "Battleship":4, 
@@ -40,7 +41,7 @@ $(document).ready(function() {
                 String.fromCharCode(97 + (i - 91)).toUpperCase() + "</span>");
     }
   };
-  
+
   socket.on('connect', function() {
     $(".text").text("Welcome, to Battleship!");
     socket.send({"type":"hand-shake", "id":player_id})
@@ -79,14 +80,13 @@ $(document).ready(function() {
         console.log("here:"+loc)
         console.log($(board).find(String(loc)).children());
       }
-      $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot 
+      $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
         + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
     }
     else if (msg.type == "game_over"){
       phase = "game_over"
     }
   });
-
 
   $('#sendbutton').on('click', function() {
     sendChatMessage();
@@ -97,39 +97,13 @@ $(document).ready(function() {
     }
   });
 
-  $('.ship').on('click', function() {
-    ship = $(".ship").text();
-    if (ship == "Carrier")
-       $('.ship').text("Battleship");
-    else if (ship == "Battleship")
-       $('.ship').text("Cruiser");
-    else if (ship == "Cruiser")
-       $('.ship').text("Submarine");
-    else if (ship == "Submarine")
-       $('.ship').text("Destroyer");
-    else if (ship == "Destroyer")
-       $('.ship').text("Carrier");
-  });
-
-  $('.orientation').on('click', function() {
-    direction = $(".orientation").text();
-    if (direction == "Horizontal"){
-      $('.orientation').text("Vertical");
-      active_orientation = "vert"
-    }
-    else if (direction == "Vertical"){
-      $('.orientation').text("Horizontal");
-      active_orientation = "horz"
-    }
-  });
-
   $(".top").find(".points").off("mouseenter mouseover").on("mouseenter mouseover", function() {
     if(!($(this).hasClass("used")) && phase == "firing") enemyBoard.highlight(this);
   });
 
   $(".bottom").find(".points").off("mouseenter").on("mouseenter", function() {
     var num = $(this).attr('class').slice(15);
-    ship_len = ships[$(".ship").text()];
+    ship_len = ships[ship];
 
     if (active_orientation == "horz") displayShipHorz(parseInt(num), ship_len, this);
     else displayShipVert(parseInt(num), ship_len, this);
@@ -237,9 +211,9 @@ function sendShip(location){
   socket.send({
     type:"place-ship",
     location: String(location - 1),
-    ship: $('.ship').text().toLowerCase(),
+    ship: ship.toLowerCase(),
     direction: $('.orientation').text().toLowerCase(),
-    length: ships[$('.ship').text()],
+    length: ships[ship],
     id: player_id
   });
 }
