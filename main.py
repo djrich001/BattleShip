@@ -63,7 +63,23 @@ def handleMessage(msg):
         handle_hand_shake(msg)
     elif (msg["type"] == "fire"):
         handle_fire(msg)
+    elif (msd["type"] == "delete-ship"):
+        handle_delete__ship(msg)
     print(msg)
+
+def handle_delete__ship(msg):
+    """Function to handle the deletion of ships on the board."""
+    try:
+        # Get the player information based on input parameters
+        player_id = msg["id"]
+        player_no = player_numbers[player_id]
+        game = games[players[player_id]]
+        ship = Ship(int(msg["location"]), type=msg["ship"], 
+                    direction=msg["direction"])
+        # Remove the ship from the game instance under the appropriate player
+        game.removeShip(player_no, ship)
+    except ValueError as e:
+        send_alert(str(e))
 
 def check_valid_chat(msg):
     """Function to check the validity of a chat message."""

@@ -9,7 +9,8 @@ var shot_type = "normal";
 var boardWidth = 10; // Not currently a proper way to designate width.
 var active_orientation = "horz";
 var phase = "placement";
-var ship;
+var ship = null;
+var shipCounter = 0;
 ships = {
   "Carrier": 5, 
   "Battleship":4, 
@@ -26,9 +27,9 @@ $(document).ready(function() {
     if (i < 11) {
       $(".top").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
       $(".bottom").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
-      $(".grid").append("<li class='points offset1 " + i + "'><span class='hole'></span></li>");
+      $(".grid").append("<li class='points offset1 " + i + "'></li>");
     } else {
-      $(".grid").append("<li class='points offset2 " + i + "'><span class='hole'></span></li>");
+      $(".grid").append("<li class='points offset2 " + i + "'></li>");
     }
     if (i == 11) {
       $(".top").prepend("<span class='aTops' style='color:red;'>E</span>");
@@ -104,8 +105,10 @@ $(document).ready(function() {
   $(".bottom").find(".points").off("mouseenter").on("mouseenter", function() {
     var num = $(this).attr('class').slice(15);
     ship_len = ships[ship];
-
-    if (active_orientation == "horz") displayShipHorz(parseInt(num), ship_len, this);
+    if (ship == null){
+        deleteShip(parseInt(num), this);
+    }
+    else if (active_orientation == "horz") displayShipHorz(parseInt(num), ship_len, this);
     else displayShipVert(parseInt(num), ship_len, this);
   });
 });
@@ -136,31 +139,50 @@ var enemyBoard = {
 function placeShip(location, length, direction, ship) {
   if (direction == "horizontal"){
     for (var i = location; i < (location + length); i++) {
-      $(".bottom ." + i).addClass(ship);
-      $(".bottom ." + i).children().removeClass("hole");
+      $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
     }
+    shipCounter++;
   } else {
     var inc = 0;
     for (var i = location; i < (location + length); i++) {
-      $(".bottom ." + (location + inc)).addClass(ship);
-      $(".bottom ." + (location + inc)).children().removeClass("hole");
+      $(".bottom ." + (location + inc)).addClass(ship).attr("id",shipCounter);
       inc = inc + boardWidth;
     }
+    shipCounter++;
   }
 };
 
 function displayShipHorz(location, length, point) {
-  var endPoint = location + length - 2;
+//if ship is carrier
+  if (length == 5){
+    var locationMod = location - 2;
+    var endPoint = location + length - 4;
+  }
+//if ship is battleship
+  if (length == 4){
+    var locationMod = location - 1;
+    var endPoint = location + length - 3;
+  }
+//if ship is cruiser / submarine
+  if (length == 3){
+    var locationMod = location - 1;
+    var endPoint = location + length - 3;
+  }
+//if ship is destroyer
+  if (length == 2){
+    var locationMod = location;
+    var endPoint = location + length - 3;
+  }
   if (!(endPoint % boardWidth >= 0 && endPoint % boardWidth < length - 1)) {
-    for (var i = location; i < (location + length); i++) {
+    for (var i = locationMod; i < (locationMod + length); i++) {
       $(".bottom ." + i).addClass("highlight");
     }
     $(point).off("click").on("click", function() {
-      sendShip(location);
+      sendShip(locationMod);
     });
   }
   $(point).off("mouseleave").on("mouseleave", function() {
-    removeShipHorz(location, length);
+    removeShipHorz(locationMod, length);
   });
 }
 
@@ -168,19 +190,38 @@ function removeShipHorz(location, length) {
   for (var i = location; i < location + length; i++) {
     $(".bottom ." + i).removeClass("highlight");
   }
+  $(point).off("click").on("click", function() {
+      deleteShip(location);
+  });
 }
 
 
 function displayShipVert(location, length, point) {
+//if ship is carrier
+  if (length == 5){
+    var locationMod = location - 20;
+  }
+//if ship is battleship
+  if (length == 4){
+    var locationMod = location - 10;
+  }
+//if ship is cruiser / submarine
+  if (length == 3){
+    var locationMod = location - 10;
+  }
+//if ship is cruiser / submarine
+  if (length == 2){
+    var locationMod = location;
+  }
   var endPoint = (length * boardWidth) - boardWidth;
-  var inc = 0; 
-  if (location + endPoint <= 100) {
-    for (var i = location; i < (location + length); i++) {
-      $(".bottom ." + (location + inc)).addClass("highlight");
+  var inc = 0;
+  if (locationMod + endPoint <= 100 && locationMod > 0) {
+    for (var i = locationMod; i < (locationMod + length); i++) {
+      $(".bottom ." + (locationMod + inc)).addClass("highlight");
       inc = inc + boardWidth;
     }
     $(point).off("click").on("click", function() {
-      sendShip(location);
+      sendShip(locationMod);
     });
   }
   $(point).off("mouseleave").on("mouseleave", function() {
@@ -194,9 +235,27 @@ function removeShipVert(location, length) {
     $(".bottom ." + (location + inc)).removeClass("highlight");
     inc = inc + 10;
   }
+  $(point).off("click").on("click", function() {
+      deleteShip(locationMod);
+  });
 }
 
+function deleteShip(location, point){
+   var getId = $('.bottom .' + location).attr('id');
+   var getClass = ($('.bottom .' + location).attr('class')).split(" ");
+   var getShipName = getClass[getClass.length - 1];
 
+    $(point).off("click").on("click", function() {
+      for(var i = 0; i < 100; i++){
+        $('.bottom .' + i).attr('id',getId).removeClass(getShipName);
+      }
+      // might return later - trying to make deleting a ship look like picking it up
+//      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
+//      $('.carrierhover').css({'visibility':'visible'});
+//      console.log(ship)
+    });
+    deleteShipServer(location)
+}
 
 function sendChatMessage(){
   socket.send({
@@ -210,6 +269,17 @@ function sendChatMessage(){
 function sendShip(location){
   socket.send({
     type:"place-ship",
+    location: String(location - 1),
+    ship: ship.toLowerCase(),
+    direction: $('.orientation').text().toLowerCase(),
+    length: ships[ship],
+    id: player_id
+  });
+}
+
+function deleteShipServer(location){
+  socket.send({
+    type:"delete-ship",
     location: String(location - 1),
     ship: ship.toLowerCase(),
     direction: $('.orientation').text().toLowerCase(),

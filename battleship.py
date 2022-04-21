@@ -104,6 +104,18 @@ class BattleshipGame():
       raise ValueError(f"Max Budget is: {str(self.shipMaxSpaceCount)}"
         + " Used budget is: {spent}. Adding the desired ship exceeds the max budget")
 
+  def removeShip(self, player_no, ship):
+    # Get the current player ship list
+    player = self.getPlayer(player_id)
+    
+    # Delete ship
+    try:
+      player.pop(ship.type)
+      return True
+    # If ship does not exist, give error message
+    except ValueError:
+        print("Ship does not exist.")
+
   def checkIfColliding(self, player, ship):
     for existingShip in player:
       if ship.collision(existingShip):
