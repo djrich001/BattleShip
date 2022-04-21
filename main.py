@@ -7,6 +7,7 @@ from flask_socketio import SocketIO, send
 from flask_socketio import join_room, leave_room
 from datetime import time
 from uuid import uuid4
+from pprint import pprint
 
 import unittest
 
@@ -59,27 +60,13 @@ def handleMessage(msg):
         handle_chat(msg)
     elif (msg["type"] == "place-ship"):
         handle_place_ship(msg)
+    elif (msg["type"] == "delete-ship"):
+        handle_delete_ship(msg)
     elif (msg["type"] == "hand-shake"):
         handle_hand_shake(msg)
     elif (msg["type"] == "fire"):
         handle_fire(msg)
-    elif (msd["type"] == "delete-ship"):
-        handle_delete__ship(msg)
     print(msg)
-
-def handle_delete__ship(msg):
-    """Function to handle the deletion of ships on the board."""
-    try:
-        # Get the player information based on input parameters
-        player_id = msg["id"]
-        player_no = player_numbers[player_id]
-        game = games[players[player_id]]
-        ship = Ship(int(msg["location"]), type=msg["ship"], 
-                    direction=msg["direction"])
-        # Remove the ship from the game instance under the appropriate player
-        game.removeShip(player_no, ship)
-    except ValueError as e:
-        send_alert(str(e))
 
 def check_valid_chat(msg):
     """Function to check the validity of a chat message."""
@@ -103,7 +90,7 @@ def handle_place_ship(msg):
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
         ship = Ship(int(msg["location"]), type=msg["ship"], 
-                    direction=msg["direction"])
+                    direction=msg["direction"], shipId=msg["shipId"])
         # Add the ship to the game instance under the appropriate player
         game.addShip(player_no, ship)
     except ValueError as e:
@@ -115,6 +102,19 @@ def handle_place_ship(msg):
             send_alert("All ships placed... Player 1 ready to fire!", 
                        players[player_id])
             send({"type":"game-begun"},room=players[player_id])
+
+def handle_delete_ship(msg):
+    """Function to handle the deletion of ships on the board."""
+    try:
+        # Get the player information based on input parameters
+        player_id = msg["id"]
+        player_no = player_numbers[player_id]
+        game = games[players[player_id]]
+#        ship =
+        # Remove the ship from the game instance under the appropriate player
+        game.removeShip(player_no, msg["shipId"])
+    except ValueError as e:
+        send_alert(str(e))
 
 def handle_hand_shake(msg):
     """Function to get needed data from msg and send it to link a new player into a game"""
