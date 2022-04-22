@@ -51,43 +51,49 @@ $(document).ready(function() {
   // Message Handler -----------------------------------------------------------
   socket.on('message', function(msg) {
     console.log(msg);
+    // Make chat and alert first since it applies to all phases
     if (msg.type == "chat"){
       $("#messages").append('<li><b>'+msg.name+':</b> '+msg.message+'</li>');
       $(".chat-text").scollTop=1;
     }
-    else if (msg.type == "room-join"){
-      room = msg.room;
-      player_no = Number(msg.number);
-      $(".playerno").text("PNum:" + String(player_no));
-      $(".gameid").text("Game id: " + room.substr(0,12));
-    }
-    else if (msg.type == "place-ship"){
-      placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
-    }
-    else if (msg.type == "delete-ship"){
-    }
     else if (msg.type == "alert"){
       $(".text").text(msg.message);
     }
-    else if (msg.type == "game-begun"){
-      phase = "firing";
-      turn = 1;
-    }
-    else if (msg.type == "fire"){
-      turn = 3-msg.player_no;
-      hit = msg.hit ? "hit" : "miss";
-      board = (msg.player_no == player_no) ? ".top" : ".bottom";
-      for (i = 0; i < msg.locations.length; i++){
-        loc = msg.locations[i] + 1
-        $(board).find("."+(loc)).children().addClass(hit);
-        console.log("here:"+loc)
-        console.log($(board).find(String(loc)).children());
+    // Isolate message types by phase so that placement cannot happen during firing phase
+    else if (phase == "placement"){
+      if (msg.type == "room-join"){
+        room = msg.room;
+        player_no = Number(msg.number);
+        $(".playerno").text("PNum:" + String(player_no));
+        $(".gameid").text("Game id: " + room.substr(0,12));
       }
-      $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
-        + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
+      else if (msg.type == "place-ship"){
+        placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
+      }
+      else if (msg.type == "delete-ship"){
+      }
+      else if (msg.type == "game-begun"){
+        phase = "firing";
+        turn = 1;
+      }
     }
-    else if (msg.type == "game_over"){
-      phase = "game_over"
+    else if (phase == "firing"){
+      if (msg.type == "fire"){
+        turn = 3-msg.player_no;
+        hit = msg.hit ? "hit" : "miss";
+        board = (msg.player_no == player_no) ? ".top" : ".bottom";
+        for (i = 0; i < msg.locations.length; i++){
+          loc = msg.locations[i] + 1
+          $(board).find("."+(loc)).children().addClass(hit);
+          console.log("here:"+loc)
+          console.log($(board).find(String(loc)).children());
+        }
+        $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
+          + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
+      }
+      else if (msg.type == "game_over"){
+        phase = "game_over"
+      }
     }
   });
 
@@ -152,7 +158,7 @@ function placeShip(location, length, direction, ship) {
   }
 };
 
-function displayShipHorz(location, length, point) {
+/*function displayShipHorz(location, length, point) {
 //if ship is carrier
   if (length == 5){
     var locationMod = location - 2;
@@ -185,6 +191,22 @@ function displayShipHorz(location, length, point) {
   $(point).off("mouseleave").on("mouseleave", function() {
     removeShipHorz(locationMod, length);
   });
+}*/
+
+function displayShipHorz(location, length, point) {
+    // This allows the destroyer to be placed properly.
+    var endPoint = location + length - 2;
+    if (!(endPoint % boardWidth >= 0 && endPoint % boardWidth < length - 1)) {
+        for (var i = location; i < (location + length); i++) {
+            $(".bottom ." + i).addClass("highlight");
+        }
+        $(point).off("click").on("click", function() {
+            sendShip(location);
+        });
+    }
+    $(point).off("mouseleave").on("mouseleave", function() {
+        removeShipHorz(location, length);
+    });
 }
 
 function removeShipHorz(location, length) {
