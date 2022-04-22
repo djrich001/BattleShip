@@ -1,14 +1,16 @@
 import unittest
+from pprint import pprint
 
 boardWidth = 10
 boardHeight = 10
 
 class Ship():
   ships = {'carrier':5, 'battleship':4, 'cruiser':3, 'submarine':3, 'destroyer':2}
-  def __init__(self, location = 0, type ='carrier', direction="horizontal"):
+  def __init__(self, location = 0, type ='carrier', direction="horizontal", shipId = 0):
     self._loc = location
     self._len = self.ships[type]
     self.calculateOffset(direction)
+    self.shipId = shipId
     if not self.checkValidLocation():
       raise ValueError('Out of bounds loc: ' + str(location) + ' in creation, ' 
         + str(self._len * self._offset + self._loc) + '<=' + str(boardWidth*boardHeight))
@@ -28,6 +30,12 @@ class Ship():
     self._cells = []
     for i in range(0, self._len):
       self._cells.append(self._loc + self._offset*i)
+
+  #added remover to remove cell locations on ship
+  def removeCells(self):
+    print(self._cells)
+    for i in range(0, self._len):
+      self._cells.pop()
 
   def checkValidLocation(self):
     return (self._loc < boardWidth * boardHeight 
@@ -58,6 +66,14 @@ class Ship():
       if ship.checkExists(cell):
         return True
     return False
+
+#  def __str__(self):
+#    print("location = " + str(self._loc))
+#    print("length = " + str(self._len))
+#    print("shipId = " + str(self.shipId))
+#    for s in self._cells:
+#      print("cells = " + str(s))
+
 
 
 
@@ -104,11 +120,32 @@ class BattleshipGame():
       raise ValueError(f"Max Budget is: {str(self.shipMaxSpaceCount)}"
         + " Used budget is: {spent}. Adding the desired ship exceeds the max budget")
 
+  #initiates shipremover
+  def removeShip(self, player_id, shipId):
+    # Get the current player ship list
+    player = self.getPlayer(player_id)
+    # Delete ship
+    try:
+      self.checkIfDeleted(player, shipId)
+      return True
+    # If ship does not exist, give error message
+    except ValueError:
+        print("Ship does not exist.")
+
   def checkIfColliding(self, player, ship):
     for existingShip in player:
       if ship.collision(existingShip):
         raise ValueError('Collision with existing ship')
     return False
+
+  #loops through players ships and selects the one
+  #that has the id of the passed variable
+  #removes the ship from player list
+  def checkIfDeleted(self, player, shipId):
+    for ship in player[:]:
+      if int(ship.shipId) == int(shipId):
+        ship.removeCells()
+        player.remove(ship)
 
   def checkGameOver(self, player_id):
     player = self.getPlayer(player_id)

@@ -4,13 +4,14 @@ html {
   height: 100%;
 }
 
+/*sets the borders on the left and right*/
 #main {
   width: 755px;
   height: 800px;
   margin: auto;
 
 }
-
+/*is the area within the blue border*/
 .board {
   /*position: absolute;*/
   width: 755px; 
@@ -19,12 +20,13 @@ html {
   border: 2px solid #73B1B7;
   border-radius: 10px;
 }
-
+/*another border within board, to hold bottom and top*/
 .displays {
   position: relative;
   margin: 25px;
 }
 
+/*is the controlling players board*/
 .bottom {
   width: 330px;
   height: 330px;
@@ -35,6 +37,7 @@ html {
 
 }
 
+/*is the enemy board*/
 .top {
   width: 330px;
   height: 330px;
@@ -44,6 +47,7 @@ html {
   border-bottom: 1px solid #8DEEEE;
 }
 
+/*class to hold the squares in place of grid pattern*/
 .grid {
   position: absolute;
   width: 300px;
@@ -53,6 +57,7 @@ html {
   font-size: 0;
 }
 
+/*digit border on top of both boards*/
 .aTops {
   width: 29px;
   height: 29px;
@@ -66,6 +71,7 @@ html {
   text-align: center;
 }
 
+/*alphabet border on left of board*/
 .aLeft {
   position: relative;
   width: 29px;
@@ -80,6 +86,7 @@ html {
   text-align: center;
 }
 
+/*is one square to be replicated 100x in grid class*/
 .points {
   position: relative;
   width: 29px;
@@ -87,11 +94,9 @@ html {
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: inline-block;
-
-
 }
 
-
+/*changes the color when hovering over*/
 .highlight {
   background: rgba(144,144,144,0.9);
 }
@@ -100,6 +105,7 @@ html {
   color: #008B8B;
 }
 
+/*to see hits on board (in default state: invisible)*/
 .hole {
   position: relative;
   width: 10px;
@@ -108,9 +114,10 @@ html {
   border: 1px solid #8DEEEE;
   border-radius: 50%;
   display: table;
+  visibility: hidden;
 }
 
-
+/*location for buttons and console*/
 .panel {
   /*float: right;*/
   /*position: absolute;*/
@@ -120,6 +127,7 @@ html {
   /*margin-top: 25px;*/
 }
 
+/*border location for buttons*/
 .topPanel {
   width: 45%;
   height: 100%;
@@ -128,10 +136,12 @@ html {
   display: inline-block;
 }
 
+/*not in use*/
 .bottomPanel {
   
 }
 
+/*holds console location*/
 .console {
   /*position: relative;*/
   width: 47%;
@@ -144,6 +154,7 @@ html {
   color: green;
 }
 
+/*aligns text within the console*/
 .text {
   /*position: relative;*/
   width: 92%;
@@ -152,6 +163,7 @@ html {
   display: inline-block;
 }
 
+/*buttons themselves*/
 .buttons {
   position: relative;
   display: block;
@@ -170,70 +182,85 @@ html {
   cursor: pointer;
 }
 
+/*colors in the buttons when hovered*/
 .buttons:hover {
   background: rgba(169,169,169,0.3);
 }
 
+/*changes the enemy board highlight on hover*/
 .target {
   background: rgba(250, 10, 10, 0.7);
 }
 
+/*carrier placed on board*/
 .carrier{
     background: rgba(36,36,36,1);
 }
 
+/*carrier following mouse on button click*/
 .carrierhover {
   background: rgba(36,36,36,1);
   width: 145px;
   height: 29px;
 }
 
+/*battleship placed on board*/
 .battleship {
   background: rgba(49,49,49,0.9);
 }
 
+/*battleship following mouse on button click*/
 .battleshiphover {
   background: rgba(49,49,49,0.9);
   width: 116px;
   height: 29px;
 }
 
+/*cruiser placed on board*/
 .cruiser {
   background: rgba(255,64,64,0.9);
 }
 
+/*cruiser following mouse on button click*/
 .cruiserhover {
   background: rgba(255,64,64,0.9);
   width: 87px;
   height: 29px;
 }
 
+/*submarine placed on board*/
 .submarine {
   background: rgba(100,100,100,0.7);
 }
 
+/*submarine following mouse on button click*/
 .submarinehover {
   background: rgba(100,100,100,0.7);
   width: 87px;
   height: 29px;
 }
 
+/*destroyer placed on board*/
 .destroyer {
   background: rgba(81,81,81,0.7);
 }
 
+/*destroyer following mouse on button click*/
 .destroyerhover {
   background: rgba(81,81,81,0.7);
   width: 58px;
   height: 29px;
 }
 
-.ship{
+/*base class for mouse follow ships*/
+.shiphover{
   visibility: hidden;
   position: absolute;
-  transform: translate(0%,-105%);
+  transform: translate(-50%,-50%);
   border: 1px solid;
   z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .grid-display{
@@ -259,6 +286,7 @@ html {
 
 }
 
+/*on correct attack fills hole with red tack*/
 .hit {
   position: relative;
   margin: 1.5px;
@@ -294,6 +322,7 @@ html {
   -moz-animation-fill-mode: none;
 }
 
+/*on miss attack fill hole with white tack*/
 .miss {
   position: relative;
   margin: 1.5px;
@@ -392,6 +421,7 @@ html {
   }
 }
 
+/*chat border area*/
 .chat-box {
   /*position: absolute;*/
   height: 335px;
@@ -405,6 +435,7 @@ html {
 
 }
 
+/*not used currently*/
 .chat-text {
 }
 
@@ -413,15 +444,18 @@ html {
   padding: 0;
 }
 
+/*location for chat input location*/
 .chat-input {
   float:bottom;
 }
 
+/*place game id location*/
 .gameid {
   display: inline;
   float: right;
 }
 
+/*place player number location*/
 .playerno {
   display: inline;
   /*float: right;*/

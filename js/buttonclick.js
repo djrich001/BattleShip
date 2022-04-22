@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+    //has all ships follow mouse
       $(document).mousemove(function(e){
         $('.carrierhover').css({
           left: e.pageX,
@@ -31,6 +32,8 @@ $(document).ready(function() {
         });
       });
 
+//on click of buttons set shiphover css to visible and
+//rest to invisible
   $('.button1').on('click', function() {
     ship = "Carrier"
     $('.carrierhover').css({'visibility':'visible'});
@@ -40,6 +43,7 @@ $(document).ready(function() {
      $('.destroyerhover').css({'visibility':'hidden'});
     $('.bottom').on('click', function(){
         $('.carrierhover').css({'visibility':'hidden'});
+        ship = null;
     });
   });
   $('.button2').on('click', function() {
@@ -51,6 +55,7 @@ $(document).ready(function() {
      $('.destroyerhover').css({'visibility':'hidden'});
     $('.bottom').on('click', function(){
         $('.battleshiphover').css({'visibility':'hidden'});
+        ship = null;
     });
   });
   $('.button3').on('click', function() {
@@ -62,6 +67,7 @@ $(document).ready(function() {
      $('.destroyerhover').css({'visibility':'hidden'});
     $('.bottom').on('click', function(){
         $('.cruiserhover').css({'visibility':'hidden'});
+        ship = null;
     });
   });
   $('.button4').on('click', function() {
@@ -73,6 +79,7 @@ $(document).ready(function() {
      $('.destroyerhover').css({'visibility':'hidden'});
     $('.bottom').on('click', function(){
         $('.submarinehover').css({'visibility':'hidden'});
+        ship = null;
     });
   });
   $('.button5').on('click', function() {
@@ -84,8 +91,10 @@ $(document).ready(function() {
      $('.submarinehover').css({'visibility':'hidden'});
     $('.bottom').on('click', function(){
         $('.destroyerhover').css({'visibility':'hidden'});
+        ship = null;
     });
   });
+//on click of vert/horz button change ship hover size
   $('.orientation').on('click', function() {
     direction = $(".orientation").text();
     if (direction == "Horizontal"){
@@ -93,28 +102,23 @@ $(document).ready(function() {
       active_orientation = "vert"
       $('.carrierhover').css({
       'width':'29px',
-      'height':'145px',
-      'transform': 'translate(0%,5%)'
+      'height':'145px'
       });
       $('.battleshiphover').css({
       'width':'29px',
-      'height':'116px',
-      'transform': 'translate(0%,10%)'
+      'height':'116px'
       });
       $('.cruiserhover').css({
       'width':'29px',
-      'height':'87px',
-      'transform': 'translate(0%,10%)'
+      'height':'87px'
       });
       $('.submarinehover').css({
       'width':'29px',
-      'height':'87px',
-      'transform': 'translate(0%,10%)'
+      'height':'87px'
       });
       $('.destroyerhover').css({
       'width':'29px',
-      'height':'58px',
-      'transform': 'translate(0%,10%)'
+      'height':'58px'
       });
     }
     else if (direction == "Vertical"){
@@ -122,28 +126,23 @@ $(document).ready(function() {
       active_orientation = "horz"
       $('.carrierhover').css({
       'width':'145px',
-      'height':'29px',
-      'transform': 'translate(0%,-105%)'
+      'height':'29px'
       });
       $('.battleshiphover').css({
       'width':'116px',
-      'height':'29px',
-      'transform': 'translate(0%,-105%)'
+      'height':'29px'
       });
       $('.cruiserhover').css({
       'width':'87px',
-      'height':'29px',
-      'transform': 'translate(0%,-105%)'
+      'height':'29px'
       });
       $('.submarinehover').css({
       'width':'87px',
-      'height':'29px',
-      'transform': 'translate(0%,-105%)'
+      'height':'29px'
       });
       $('.destroyerhover').css({
       'width':'58px',
-      'height':'29px',
-      'transform': 'translate(0%,-105%)'
+      'height':'29px'
       });
     }
   });
