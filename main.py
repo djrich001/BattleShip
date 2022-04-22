@@ -24,6 +24,7 @@ games = {}
 players = {}
 player_numbers = {}
 player_ships = {}
+game_over = False
 
 @app.route('/css/<path:path>', methods=['GET'])
 def send_css(path):
@@ -169,6 +170,13 @@ def send_shot(rm, player_no, locations, hit, shot):
 
 def handle_fire(msg):
     """Function to handle the firing mechanism"""
+
+    # Check if game is over
+    global game_over
+    if (game_over):
+        send({"type":"game-over"},players[player_id])
+        return
+
     try:
         player_id = msg["id"]
         player_no = player_numbers[player_id]
@@ -181,6 +189,7 @@ def handle_fire(msg):
             send_shot(players[player_id], player_no, locations,
                       hit, msg["shot"])
             if game.checkGameOver(3-player_no):
+                game_over = True
                 send_alert("GAME OVER, PLAYER " + str(player_no)
                         + " WINS!!", players[player_id])
                 send({"type":"game-over"},players[player_id])
