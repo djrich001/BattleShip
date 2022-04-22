@@ -110,7 +110,6 @@ def handle_delete_ship(msg):
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
-#        ship =
         # Remove the ship from the game instance under the appropriate player
         game.removeShip(player_no, msg["shipId"])
     except ValueError as e:
