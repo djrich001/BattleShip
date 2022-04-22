@@ -21,149 +21,149 @@ ships = {
 
 $(document).ready(function() {
 
-  socket = io.connect( 'http://' + document.domain + ':' + location.port);
+    socket = io.connect( 'http://' + document.domain + ':' + location.port);
 
-  //loops through both boards setting up the hole classes
-  //and the alphabet and digits
-  for (var i = 1; i <= 100; i++) {
-    if (i < 11) {
-      $(".top").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
-      $(".bottom").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
-      $(".grid").append("<li class='points offset1 " + i + "'><span class='hole'></li>");
-    } else {
-      $(".grid").append("<li class='points offset2 " + i + "'><span class='hole'></li>");
-    }
-    if (i == 11) {
-      $(".top").prepend("<span class='aTops' style='color:red;'>E</span>");
-      $(".bottom").prepend("<span class='aTops' style='color:blue;'>P</span>");
-    }
-    if (i > 90) {
-      $(".top").append("<span class='aLeft'>" + 
+    //loops through both boards setting up the hole classes
+    //and the alphabet and digits
+    for (var i = 1; i <= 100; i++) {
+        if (i < 11) {
+            $(".top").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
+            $(".bottom").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
+            $(".grid").append("<li class='points offset1 " + i + "'><span class='hole'></li>");
+        } else {
+            $(".grid").append("<li class='points offset2 " + i + "'><span class='hole'></li>");
+        }
+        if (i == 11) {
+            $(".top").prepend("<span class='aTops' style='color:red;'>E</span>");
+            $(".bottom").prepend("<span class='aTops' style='color:blue;'>P</span>");
+        }
+        if (i > 90) {
+            $(".top").append("<span class='aLeft'>" + 
                 String.fromCharCode(97 + (i - 91)).toUpperCase() + "</span>");
-      $(".bottom").append("<span class='aLeft'>" + 
+            $(".bottom").append("<span class='aLeft'>" + 
                 String.fromCharCode(97 + (i - 91)).toUpperCase() + "</span>");
-    }
-  };
+        }
+    };
 
-  socket.on('connect', function() {
-    $(".text").text("Welcome, to Battleship!");
-    socket.send({"type":"hand-shake", "id":player_id})
-  });
+    socket.on('connect', function() {
+        $(".text").text("Welcome, to Battleship!");
+        socket.send({"type":"hand-shake", "id":player_id})
+    });
 
-  // Message Handler -----------------------------------------------------------
-  socket.on('message', function(msg) {
-    console.log(msg);
-    if (msg.type == "chat"){
-      $("#messages").append('<li><b>'+msg.name+':</b> '+msg.message+'</li>');
-      $(".chat-text").scollTop=1;
-    }
-    else if (msg.type == "room-join" && phase == "placement"){
-      room = msg.room;
-      player_no = Number(msg.number);
-      $(".playerno").text("PNum:" + String(player_no));
-      $(".gameid").text("Game id: " + room.substr(0,12));
-    }
-    else if (msg.type == "place-ship" && phase == "placement"){
-      placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
-    }
-    else if (msg.type == "delete-ship" && phase == "placement"){
-    }
-    else if (msg.type == "alert"){
-      $(".text").text(msg.message);
-    }
-    else if (msg.type == "game-begun"){
-      phase = "firing";
-      turn = 1;
-    }
-    else if (msg.type == "fire" && phase == "firing"){
-      turn = 3-msg.player_no;
-      hit = msg.hit ? "hit" : "miss";
-      board = (msg.player_no == player_no) ? ".top" : ".bottom";
-      for (i = 0; i < msg.locations.length; i++){
-        loc = msg.locations[i] + 1
-        //adds red dot to hole class (default white)
-        $(board).find("."+(loc)).children().addClass(hit);
-        //sets the hole class to visible to make the attacks visible
-        $(board).find("."+(loc)).children().css({'visibility':'visible'});
-        console.log("here:"+loc)
-        console.log($(board).find(String(loc)).children());
-      }
-      $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
-        + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
-    }
-    else if (msg.type == "game_over"){
-      phase = "game_over"
-    }
-  });
+    // Message Handler -----------------------------------------------------------
+    socket.on('message', function(msg) {
+        console.log(msg);
+        if (msg.type == "chat"){
+            $("#messages").append('<li><b>'+msg.name+':</b> '+msg.message+'</li>');
+            $(".chat-text").scollTop=1;
+        }
+        else if (msg.type == "room-join" && phase == "placement"){
+            room = msg.room;
+            player_no = Number(msg.number);
+            $(".playerno").text("PNum:" + String(player_no));
+            $(".gameid").text("Game id: " + room.substr(0,12));
+        }
+        else if (msg.type == "place-ship" && phase == "placement"){
+            placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
+        }
+        else if (msg.type == "delete-ship" && phase == "placement"){
+        }
+        else if (msg.type == "alert"){
+            $(".text").text(msg.message);
+        }
+        else if (msg.type == "game-begun"){
+            phase = "firing";
+            turn = 1;
+        }
+        else if (msg.type == "fire" && phase == "firing"){
+            turn = 3-msg.player_no;
+            hit = msg.hit ? "hit" : "miss";
+            board = (msg.player_no == player_no) ? ".top" : ".bottom";
+            for (i = 0; i < msg.locations.length; i++){
+                loc = msg.locations[i] + 1
+                //adds red dot to hole class (default white)
+                $(board).find("."+(loc)).children().addClass(hit);
+                //sets the hole class to visible to make the attacks visible
+                $(board).find("."+(loc)).children().css({'visibility':'visible'});
+                console.log("here:"+loc)
+                console.log($(board).find(String(loc)).children());
+            }
+            $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
+                + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
+        }
+        else if (msg.type == "game_over"){
+            phase = "game_over"
+        }
+    });
 
-  $('#sendbutton').on('click', function() {
-    sendChatMessage();
-  });
-  $("#message").on('keyup', function (e) {
-    if (e.keyCode == 13) {
-      sendChatMessage();
-    }
-  });
+    $('#sendbutton').on('click', function() {
+        sendChatMessage();
+    });
+    $("#message").on('keyup', function (e) {
+        if (e.keyCode == 13) {
+            sendChatMessage();
+        }
+    });
 
-  //on enter into enemy board trigger highlight of square
-  $(".top").find(".points").off("mouseenter mouseover").on("mouseenter mouseover", function() {
-    if(!($(this).hasClass("used")) && phase == "firing") enemyBoard.highlight(this);
-  });
+    //on enter into enemy board trigger highlight of square
+    $(".top").find(".points").off("mouseenter mouseover").on("mouseenter mouseover", function() {
+        if(!($(this).hasClass("used")) && phase == "firing") enemyBoard.highlight(this);
+    });
 
-  //on enter into your board trigger delete ship, hightlight vert or horz
-  $(".bottom").find(".points").off("mouseenter").on("mouseenter", function() {
-    var num = $(this).attr('class').slice(15);
-    ship_len = ships[ship];
-    //if no ship selected: initiate delete ship on clicked ship
-    if (ship == null){
-        deleteShipClient(parseInt(num), this);
-    }
-    //highlight horz
-    else if (active_orientation == "horz") displayShipHorz(parseInt(num), ship_len, this);
-    //highlight vert
-    else displayShipVert(parseInt(num), ship_len, this);
-  });
+    //on enter into your board trigger delete ship, hightlight vert or horz
+    $(".bottom").find(".points").off("mouseenter").on("mouseenter", function() {
+        var num = $(this).attr('class').slice(15);
+        ship_len = ships[ship];
+        //if no ship selected: initiate delete ship on clicked ship
+        if (ship == null){
+            deleteShipClient(parseInt(num), this);
+        }
+        //highlight horz
+        else if (active_orientation == "horz") displayShipHorz(parseInt(num), ship_len, this);
+        //highlight vert
+        else displayShipVert(parseInt(num), ship_len, this);
+    });
 });
 
 var enemyBoard = {
-  allHits: [],
-  highlight: function(square) {
-    //on hover of enemy board add highlight
-    $(square).addClass("target").off("mouseleave").on("mouseleave", function() {
-      $(this).removeClass("target"); 
-    });
-    //on click trigger fire (sends msg to main.py)
-    $(square).off("click").on("click", function() {
-      if(!($(this).hasClass("used"))) {
-        // $(this).removeClass("target").addClass("used");
-        var num = parseInt($(this).attr("class").slice(15));
-        fire(num);
+    allHits: [],
+    highlight: function(square) {
+        //on hover of enemy board add highlight
+        $(square).addClass("target").off("mouseleave").on("mouseleave", function() {
+            $(this).removeClass("target"); 
+        });
+        //on click trigger fire (sends msg to main.py)
+        $(square).off("click").on("click", function() {
+            if(!($(this).hasClass("used"))) {
+                // $(this).removeClass("target").addClass("used");
+                var num = parseInt($(this).attr("class").slice(15));
+                fire(num);
 
-        //if (false == bool) {
-          //$(".text").text(output.miss("You"));
-          //$(this).children().addClass("miss");
-        //} else $(this).children().addClass("hit");
-        //$(".top").find(".points").off("mouseenter").off("mouseover").off("mouseleave").off("click");
-      } 
-    });
-  },
+                //if (false == bool) {
+                  //$(".text").text(output.miss("You"));
+                  //$(this).children().addClass("miss");
+                //} else $(this).children().addClass("hit");
+                //$(".top").find(".points").off("mouseenter").off("mouseover").off("mouseleave").off("click");
+            }
+        });
+    },
 }
 
 //after msg sent add ship on html page
 function placeShip(location, length, direction, ship) {
-  if (phase == "placement"){
-    if (direction == "horizontal"){
-      for (var i = location; i < (location + length); i++) {
-        $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
-      }
-    } else {
-      var inc = 0;
-      for (var i = location; i < (location + length); i++) {
-        $(".bottom ." + (location + inc)).addClass(ship).attr("id",shipCounter);
-        inc = inc + boardWidth;
-      }
+    if (phase == "placement"){
+        if (direction == "horizontal"){
+            for (var i = location; i < (location + length); i++) {
+                $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
+            }
+        } else {
+            var inc = 0;
+            for (var i = location; i < (location + length); i++) {
+                $(".bottom ." + (location + inc)).addClass(ship).attr("id",shipCounter);
+                inc = inc + boardWidth;
+            }
+        }
     }
-  }
 };
 
 //highlight on board horz
@@ -206,11 +206,11 @@ function displayShipHorz(location, length, point) {
 
 //remove horz highlight on leave
 function removeShipHorz(location, length) {
-  if (phase == "placement"){
-    for (var i = location; i < location + length; i++) {
-      $(".bottom ." + i).removeClass("highlight");
+    if (phase == "placement"){
+        for (var i = location; i < location + length; i++) {
+            $(".bottom ." + i).removeClass("highlight");
+        }
     }
-  }
 }
 
 //highlight ship on vert
@@ -251,13 +251,13 @@ function displayShipVert(location, length, point) {
 
 //remove vert highlight on leave
 function removeShipVert(location, length) {
-  if (phase == "placement"){
-    var inc = 0;
-    for (var i = location; i < location + length; i++) {
-      $(".bottom ." + (location + inc)).removeClass("highlight");
-      inc = inc + 10;
+    if (phase == "placement"){
+        var inc = 0;
+        for (var i = location; i < location + length; i++) {
+            $(".bottom ." + (location + inc)).removeClass("highlight");
+            inc = inc + 10;
+        }
     }
-  }
 }
 
 //begins the process for deleting ship on the gui
@@ -282,41 +282,42 @@ function deleteShipClient(location, point){
 }
 
 function sendChatMessage(){
-  socket.send({
-    name: $('#name').val(),
-    message:$('#message').val(),
-    type:"chat"
-  });
-  $('#message').val("");
+    socket.send({
+        name: $('#name').val(),
+        message:$('#message').val(),
+        type:"chat"
+    });
+    $('#message').val("");
 };
 
 function sendShip(location){
-  socket.send({
-    type:"place-ship",
-    location: String(location - 1),
-    ship: ship.toLowerCase(),
-    direction: $('.orientation').text().toLowerCase(),
-    length: ships[ship],
-    id: player_id,
-    shipId: shipCounter
-  });
+    socket.send({
+        type:"place-ship",
+        location: String(location - 1),
+        ship: ship.toLowerCase(),
+        direction: $('.orientation').text().toLowerCase(),
+        length: ships[ship],
+        id: player_id,
+        shipId: shipCounter
+    });
 }
 
 //delete data sent to main.py
 function deleteShipServer(getId){
-  socket.send({
-    type:"delete-ship",
-    id: player_id,
-    shipId: getId
-  });
+    socket.send({
+        type:"delete-ship",
+        id: player_id,
+        shipId: getId
+    });
 }
 
 function fire(location) {
-  if (phase == "firing")
-    socket.send({
-      type:"fire",
-      shot:shot_type,
-      location: String(location - 1),
-      id:player_id
-    });
+    if (phase == "firing"){
+        socket.send({
+            type:"fire",
+            shot:shot_type,
+            location: String(location - 1),
+            id:player_id
+        });
+    }
 }
