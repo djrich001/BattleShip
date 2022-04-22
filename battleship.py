@@ -1,18 +1,24 @@
 import unittest
+from pprint import pprint
 
 boardWidth = 10
 boardHeight = 10
 
 class Ship():
   ships = {'carrier':5, 'battleship':4, 'cruiser':3, 'submarine':3, 'destroyer':2}
-  def __init__(self, location = 0, type ='carrier', direction="horizontal"):
+  def __init__(self, location = 0, type ='carrier', direction="horizontal", shipId = 0):
     self._loc = location
     self._len = self.ships[type]
     self.calculateOffset(direction)
+    self.shipId = shipId
     if not self.checkValidLocation():
       raise ValueError('Out of bounds loc: ' + str(location) + ' in creation, ' 
         + str(self._len * self._offset + self._loc) + '<=' + str(boardWidth*boardHeight))
     self.assignCells(location)
+
+  # Getter for ship length
+  def get_len(self):
+    return self._len
 
   def calculateOffset(self, direction):
     if direction == "horizontal":
@@ -24,6 +30,12 @@ class Ship():
     self._cells = []
     for i in range(0, self._len):
       self._cells.append(self._loc + self._offset*i)
+
+  #added remover to remove cell locations on ship
+  def removeCells(self):
+    print(self._cells)
+    for i in range(0, self._len):
+      self._cells.pop()
 
   def checkValidLocation(self):
     return (self._loc < boardWidth * boardHeight 
@@ -55,6 +67,14 @@ class Ship():
         return True
     return False
 
+#  def __str__(self):
+#    print("location = " + str(self._loc))
+#    print("length = " + str(self._len))
+#    print("shipId = " + str(self.shipId))
+#    for s in self._cells:
+#      print("cells = " + str(s))
+
+
 
 
 class Carrier(Ship):
@@ -69,7 +89,8 @@ class Carrier(Ship):
 
 
 class BattleshipGame():
-  shipMaxCount = 5
+  # Change from number of ships to budget
+  shipMaxSpaceCount = 17
   def __init__(self, player_id = "1"):
     self.current_player = 1
     self.players={}
@@ -81,20 +102,50 @@ class BattleshipGame():
     self.players[player_id] = player_id
 
   def addShip(self, player_id, ship):
+    # Get the current player ship list
     player = self.getPlayer(player_id)
+    
+    # Get the current budget in the ship list
+    spent = 0
+    for p in player:
+      spent += p.get_len()
+    
+    # Check if ship can be placed
     if (not self.checkIfColliding(player, ship)
-      and len(player) < self.shipMaxCount):
+      and (spent + ship.get_len()) <= self.shipMaxSpaceCount):
       player.append(ship)
       return True
-    if (len(player) >= self.shipMaxCount):
-      raise ValueError("Already have " + str(self.shipMaxCount) 
-        + " ships assigned")
+    # If ship cannot be placed, give error message
+    else:
+      raise ValueError(f"Max Budget is: {str(self.shipMaxSpaceCount)}"
+        + " Used budget is: {spent}. Adding the desired ship exceeds the max budget")
+
+  #initiates shipremover
+  def removeShip(self, player_id, shipId):
+    # Get the current player ship list
+    player = self.getPlayer(player_id)
+    # Delete ship
+    try:
+      self.checkIfDeleted(player, shipId)
+      return True
+    # If ship does not exist, give error message
+    except ValueError:
+        print("Ship does not exist.")
 
   def checkIfColliding(self, player, ship):
     for existingShip in player:
       if ship.collision(existingShip):
         raise ValueError('Collision with existing ship')
     return False
+
+  #loops through players ships and selects the one
+  #that has the id of the passed variable
+  #removes the ship from player list
+  def checkIfDeleted(self, player, shipId):
+    for ship in player[:]:
+      if int(ship.shipId) == int(shipId):
+        ship.removeCells()
+        player.remove(ship)
 
   def checkGameOver(self, player_id):
     player = self.getPlayer(player_id)
@@ -120,8 +171,21 @@ class BattleshipGame():
       return self.player2
 
   def ready(self):
-    return (len(self.player1) == self.shipMaxCount 
-      and len(self.player2) == self.shipMaxCount)
+    # Ensure that no more ships can be placed on either board
+    player1_spent = 0
+    player2_spent = 0
+    for s in self.player1:
+       player1_spent += s.get_len()
+    for s in self.player2:
+      player2_spent += s.get_len()
+    
+    # Return via boolean expression
+    return ((player1_spent + 2) > self.shipMaxSpaceCount
+      and (player2_spent + 2) > self.shipMaxSpaceCount)
+    
+    #return (len(self.player1) == self.shipMaxPlaceCount 
+    #  and len(self.player2) == self.shipMaxPlaceCount)
+
 
 
 class TestBattleship(unittest.TestCase):
