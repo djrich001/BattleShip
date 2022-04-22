@@ -178,9 +178,6 @@ class BattleshipGame():
     # Return via boolean expression
     return ((player1_spent + 2) > self.shipMaxSpaceCount
       and (player2_spent + 2) > self.shipMaxSpaceCount)
-    
-    #return (len(self.player1) == self.shipMaxPlaceCount 
-    #  and len(self.player2) == self.shipMaxPlaceCount)
 
 
 

@@ -64,6 +64,8 @@ $(document).ready(function() {
     else if (msg.type == "place-ship"){
       placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
     }
+    else if (msg.type == "delete-ship"){
+    }
     else if (msg.type == "alert"){
       $(".text").text(msg.message);
     }
@@ -106,7 +108,7 @@ $(document).ready(function() {
     var num = $(this).attr('class').slice(15);
     ship_len = ships[ship];
     if (ship == null){
-        deleteShip(parseInt(num), this);
+        deleteShipClient(parseInt(num), this);
     }
     else if (active_orientation == "horz") displayShipHorz(parseInt(num), ship_len, this);
     else displayShipVert(parseInt(num), ship_len, this);
@@ -141,14 +143,12 @@ function placeShip(location, length, direction, ship) {
     for (var i = location; i < (location + length); i++) {
       $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
     }
-    shipCounter++;
   } else {
     var inc = 0;
     for (var i = location; i < (location + length); i++) {
       $(".bottom ." + (location + inc)).addClass(ship).attr("id",shipCounter);
       inc = inc + boardWidth;
     }
-    shipCounter++;
   }
 };
 
@@ -178,6 +178,7 @@ function displayShipHorz(location, length, point) {
       $(".bottom ." + i).addClass("highlight");
     }
     $(point).off("click").on("click", function() {
+      shipCounter++;
       sendShip(locationMod);
     });
   }
@@ -190,9 +191,6 @@ function removeShipHorz(location, length) {
   for (var i = location; i < location + length; i++) {
     $(".bottom ." + i).removeClass("highlight");
   }
-  $(point).off("click").on("click", function() {
-      deleteShip(location);
-  });
 }
 
 
@@ -225,7 +223,7 @@ function displayShipVert(location, length, point) {
     });
   }
   $(point).off("mouseleave").on("mouseleave", function() {
-    removeShipVert(location, length);
+    removeShipVert(locationMod, length);
   });
 }
 
@@ -235,26 +233,23 @@ function removeShipVert(location, length) {
     $(".bottom ." + (location + inc)).removeClass("highlight");
     inc = inc + 10;
   }
-  $(point).off("click").on("click", function() {
-      deleteShip(locationMod);
-  });
 }
 
-function deleteShip(location, point){
-   var getId = $('.bottom .' + location).attr('id');
+function deleteShipClient(location, point){
+    var getId = $('.bottom .' + location).attr('id');
    var getClass = ($('.bottom .' + location).attr('class')).split(" ");
    var getShipName = getClass[getClass.length - 1];
 
     $(point).off("click").on("click", function() {
       for(var i = 0; i < 100; i++){
-        $('.bottom .' + i).attr('id',getId).removeClass(getShipName);
+        $('.bottom .' + i + '[id=' + getId + ']').removeClass(getShipName).removeAttr("id");
       }
+      deleteShipServer(getId)
       // might return later - trying to make deleting a ship look like picking it up
 //      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
 //      $('.carrierhover').css({'visibility':'visible'});
 //      console.log(ship)
     });
-    deleteShipServer(location)
 }
 
 function sendChatMessage(){
@@ -273,18 +268,16 @@ function sendShip(location){
     ship: ship.toLowerCase(),
     direction: $('.orientation').text().toLowerCase(),
     length: ships[ship],
-    id: player_id
+    id: player_id,
+    shipId: shipCounter
   });
 }
 
-function deleteShipServer(location){
+function deleteShipServer(getId){
   socket.send({
     type:"delete-ship",
-    location: String(location - 1),
-    ship: ship.toLowerCase(),
-    direction: $('.orientation').text().toLowerCase(),
-    length: ships[ship],
-    id: player_id
+    id: player_id,
+    shipId: getId
   });
 }
 
