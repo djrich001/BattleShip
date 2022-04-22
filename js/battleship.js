@@ -57,16 +57,16 @@ $(document).ready(function() {
       $("#messages").append('<li><b>'+msg.name+':</b> '+msg.message+'</li>');
       $(".chat-text").scollTop=1;
     }
-    else if (msg.type == "room-join"){
+    else if (msg.type == "room-join" && phase == "placement"){
       room = msg.room;
       player_no = Number(msg.number);
       $(".playerno").text("PNum:" + String(player_no));
       $(".gameid").text("Game id: " + room.substr(0,12));
     }
-    else if (msg.type == "place-ship"){
+    else if (msg.type == "place-ship" && phase == "placement"){
       placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
     }
-    else if (msg.type == "delete-ship"){
+    else if (msg.type == "delete-ship" && phase == "placement"){
     }
     else if (msg.type == "alert"){
       $(".text").text(msg.message);
@@ -75,7 +75,7 @@ $(document).ready(function() {
       phase = "firing";
       turn = 1;
     }
-    else if (msg.type == "fire"){
+    else if (msg.type == "fire" && phase == "firing"){
       turn = 3-msg.player_no;
       hit = msg.hit ? "hit" : "miss";
       board = (msg.player_no == player_no) ? ".top" : ".bottom";
@@ -151,122 +151,134 @@ var enemyBoard = {
 
 //after msg sent add ship on html page
 function placeShip(location, length, direction, ship) {
-  if (direction == "horizontal"){
-    for (var i = location; i < (location + length); i++) {
-      $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
-    }
-  } else {
-    var inc = 0;
-    for (var i = location; i < (location + length); i++) {
-      $(".bottom ." + (location + inc)).addClass(ship).attr("id",shipCounter);
-      inc = inc + boardWidth;
+  if (phase == "placement"){
+    if (direction == "horizontal"){
+      for (var i = location; i < (location + length); i++) {
+        $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
+      }
+    } else {
+      var inc = 0;
+      for (var i = location; i < (location + length); i++) {
+        $(".bottom ." + (location + inc)).addClass(ship).attr("id",shipCounter);
+        inc = inc + boardWidth;
+      }
     }
   }
 };
 
 //highlight on board horz
 function displayShipHorz(location, length, point) {
-//if ship is carrier
-  if (length == 5){
-    var locationMod = location - 2;
-    var endPoint = location + length - 4;
-  }
-//if ship is battleship
-  if (length == 4){
-    var locationMod = location - 1;
-    var endPoint = location + length - 3;
-  }
-//if ship is cruiser / submarine
-  if (length == 3){
-    var locationMod = location - 1;
-    var endPoint = location + length - 3;
-  }
-//if ship is destroyer
-  if (length == 2){
-    var locationMod = location - 1;
-    var endPoint = location + length - 3;
-  }
-  if (!(endPoint % boardWidth >= 0 && endPoint % boardWidth < length - 1)) {
-    for (var i = locationMod; i < (locationMod + length); i++) {
-      $(".bottom ." + i).addClass("highlight");
+    if (phase == "placement"){
+        //if ship is carrier
+        if (length == 5){
+            var locationMod = location - 2;
+            var endPoint = location + length - 4;
+        }
+        //if ship is battleship
+        if (length == 4){
+            var locationMod = location - 1;
+            var endPoint = location + length - 3;
+        }
+        //if ship is cruiser / submarine
+        if (length == 3){
+            var locationMod = location - 1;
+            var endPoint = location + length - 3;
+        }
+        //if ship is destroyer
+        if (length == 2){
+            var locationMod = location - 1;
+            var endPoint = location + length - 3;
+        }
+        if (!(endPoint % boardWidth >= 0 && endPoint % boardWidth < length - 1)) {
+            for (var i = locationMod; i < (locationMod + length); i++) {
+                $(".bottom ." + i).addClass("highlight");
+            }
+            $(point).off("click").on("click", function() {
+                shipCounter++;
+                sendShip(locationMod);
+            });
+        }
+        $(point).off("mouseleave").on("mouseleave", function() {
+            removeShipHorz(locationMod, length);
+        });
     }
-    $(point).off("click").on("click", function() {
-      shipCounter++;
-      sendShip(locationMod);
-    });
-  }
-  $(point).off("mouseleave").on("mouseleave", function() {
-    removeShipHorz(locationMod, length);
-  });
 }
 
 //remove horz highlight on leave
 function removeShipHorz(location, length) {
-  for (var i = location; i < location + length; i++) {
-    $(".bottom ." + i).removeClass("highlight");
+  if (phase == "placement"){
+    for (var i = location; i < location + length; i++) {
+      $(".bottom ." + i).removeClass("highlight");
+    }
   }
 }
 
 //highlight ship on vert
 function displayShipVert(location, length, point) {
-//if ship is carrier
-  if (length == 5){
-    var locationMod = location - 20;
-  }
-//if ship is battleship
-  if (length == 4){
-    var locationMod = location - 10;
-  }
-//if ship is cruiser / submarine
-  if (length == 3){
-    var locationMod = location - 10;
-  }
-//if ship is destroyer
-  if (length == 2){
-    var locationMod = location - 10;
-  }
-  var endPoint = (length * boardWidth) - boardWidth;
-  var inc = 0;
-  if (locationMod + endPoint <= 100 && locationMod > 0) {
-    for (var i = locationMod; i < (locationMod + length); i++) {
-      $(".bottom ." + (locationMod + inc)).addClass("highlight");
-      inc = inc + boardWidth;
+    if (phase == "placement"){
+        //if ship is carrier
+        if (length == 5){
+            var locationMod = location - 20;
+        }
+        //if ship is battleship
+        if (length == 4){
+            var locationMod = location - 10;
+        }
+        //if ship is cruiser / submarine
+        if (length == 3){
+            var locationMod = location - 10;
+        }
+        //if ship is destroyer
+        if (length == 2){
+            var locationMod = location - 10;
+        }
+        var endPoint = (length * boardWidth) - boardWidth;
+        var inc = 0;
+        if (locationMod + endPoint <= 100 && locationMod > 0) {
+            for (var i = locationMod; i < (locationMod + length); i++) {
+                $(".bottom ." + (locationMod + inc)).addClass("highlight");
+                inc = inc + boardWidth;
+            }
+            $(point).off("click").on("click", function() {
+                sendShip(locationMod);
+            });
+        }
+        $(point).off("mouseleave").on("mouseleave", function() {
+            removeShipVert(locationMod, length);
+        });
     }
-    $(point).off("click").on("click", function() {
-      sendShip(locationMod);
-    });
-  }
-  $(point).off("mouseleave").on("mouseleave", function() {
-    removeShipVert(locationMod, length);
-  });
 }
 
 //remove vert highlight on leave
 function removeShipVert(location, length) {
-  var inc = 0;
-  for (var i = location; i < location + length; i++) {
-    $(".bottom ." + (location + inc)).removeClass("highlight");
-    inc = inc + 10;
+  if (phase == "placement"){
+    var inc = 0;
+    for (var i = location; i < location + length; i++) {
+      $(".bottom ." + (location + inc)).removeClass("highlight");
+      inc = inc + 10;
+    }
   }
 }
 
 //begins the process for deleting ship on the gui
 //once the gui is cleared, send delete msg to main.py
 function deleteShipClient(location, point){
-   var getId = $('.bottom .' + location).attr('id');
-   var getClass = ($('.bottom .' + location).attr('class')).split(" ");
-   var getShipName = getClass[getClass.length - 1];
+    if (phase == "placement"){
+        var getId = $('.bottom .' + location).attr('id');
+        var getClass = ($('.bottom .' + location).attr('class')).split(" ");
+        var getShipName = getClass[getClass.length - 1];
 
-    $(point).off("click").on("click", function() {
-      for(var i = 0; i < 100; i++){
-        $('.bottom .' + i + '[id=' + getId + ']').removeClass(getShipName).removeAttr("id");
-      }
-      deleteShipServer(getId)
-      // might return later - trying to make deleting a ship look like picking it up
-//      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
-//      $('.carrierhover').css({'visibility':'visible'});
-//      console.log(ship)
-    });
+        $(point).off("click").on("click", function() {
+            for(var i = 0; i < 100; i++){
+                $('.bottom .' + i + '[id=' + getId + ']').removeClass(getShipName).removeAttr("id");
+            }
+            deleteShipServer(getId)
+            // might return later - trying to make deleting a ship look like picking it up
+            //      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
+            //      $('.carrierhover').css({'visibility':'visible'});
+            //      console.log(ship)
+        });
+    }
 }
 
 function sendChatMessage(){
