@@ -1,5 +1,19 @@
 $(document).ready(function() {
 
+    //if hover brick visible and click outside board
+    //make all bricks invis
+    $(document).mouseup(function(e){
+        var container = $('.board');
+
+        if(!container.is(e.target) && container.has(e.target).length === 0){
+            $('.carrierhover').css({'visibility':'hidden'});
+            $('.battleshiphover').css({'visibility':'hidden'});
+            $('.cruiserhover').css({'visibility':'hidden'});
+            $('.submarinehover').css({'visibility':'hidden'});
+            $('.destroyerhover').css({'visibility':'hidden'});
+            ship = null;
+        }
+    });
     //has all ships follow mouse
       $(document).mousemove(function(e){
         $('.carrierhover').css({
@@ -94,7 +108,7 @@ $(document).ready(function() {
         ship = null;
     });
   });
-//on click of vert/horz button change ship hover size
+  //on click of vert/horz button change ship hover size
   $('.orientation').on('click', function() {
     direction = $(".orientation").text();
     if (direction == "Horizontal"){
@@ -145,5 +159,10 @@ $(document).ready(function() {
       'height':'29px'
       });
     }
+  });
+  //on click ready
+  $('.button-ready').on('click', function() {
+    if(budget != 17){return}
+    sendReady();
   });
 });

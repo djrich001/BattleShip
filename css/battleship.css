@@ -1,24 +1,68 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
 html {
-  width: 100%;
-  height: 100%;
+   height: 100vh;
+   width: 100vw;
+    background-color: #99CCFF;
+}
+
+body{
+    height: 97%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 /*sets the borders on the left and right*/
 #main {
-  width: 755px;
-  height: 800px;
-  margin: auto;
-
+  width: 90%;
+  height: 90%;
+  margin-top: 2%;
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-bottom: 2%;
+  background-color: white;
+  display: flex;
+  box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
 }
+
+.board-group{
+  display: flex;
+  flex-direction: column;
+  align-items:flex-end;
+  height: 60%;
+}
+
+.board-group2{
+  display: flex;
+ flex-direction: row;
+  align-items:flex-start;
+  height: 72.5%;
+  margin-left: 10%;
+}
+
+.board2{
+  width: 385px;
+  height: 385px;
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  display: flex;
+  flex: 1;
+  margin-top: 2%;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2%;
+}
+
 /*is the area within the blue border*/
 .board {
-  /*position: absolute;*/
-  width: 755px; 
-  height: 380px;
-  margin: 25px auto;
-  border: 2px solid #73B1B7;
+  width: 585px;
+  height: 585px;
+  border: 4px solid #73B1B7;
   border-radius: 10px;
+  display: flex;
+  flex: 1;
+  margin-top: 2%;
 }
 /*another border within board, to hold bottom and top*/
 .displays {
@@ -28,9 +72,8 @@ html {
 
 /*is the controlling players board*/
 .bottom {
-  width: 330px;
-  height: 330px;
-  margin-top: -330px;
+  width: 530px;
+  height: 530px;
   background: #008B8B;
   border-left: 1px solid #8DEEEE;
   border-bottom: 1px solid #8DEEEE;
@@ -39,28 +82,28 @@ html {
 
 /*is the enemy board*/
 .top {
-  width: 330px;
-  height: 330px;
-  margin-left: 375px;
+  width: 530px;
+  height: 530px;
   background: #008B8B;
   border-left: 1px solid #8DEEEE;
   border-bottom: 1px solid #8DEEEE;
 }
 
 /*class to hold the squares in place of grid pattern*/
-.grid {
+.grid-bottom {
   position: absolute;
-  width: 300px;
-  height: 300px;
+  width: 480px;
+  height: 480px;
   background: rgba(0,0,0,0);
-  margin-left: 30px;
+  margin-left: 49px;
   font-size: 0;
 }
 
 /*digit border on top of both boards*/
-.aTops {
-  width: 29px;
-  height: 29px;
+
+.aTops-bottom {
+  width: 47.17px;
+  height: 47.1px;
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: table-cell;
@@ -72,14 +115,15 @@ html {
 }
 
 /*alphabet border on left of board*/
-.aLeft {
+
+.aLeft-bottom {
   position: relative;
-  width: 29px;
-  height: 29px;
+  width: 47px;
+  height: 47px;
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: block;
-  line-height: 29px;
+  line-height: 48px;
 
   font-weight: bold;
   color: white;
@@ -87,10 +131,61 @@ html {
 }
 
 /*is one square to be replicated 100x in grid class*/
-.points {
+.points-bottom {
   position: relative;
-  width: 29px;
-  height: 29px;
+  width: 47px;
+  height: 47px;
+  border-top: 1px solid #8DEEEE;
+  border-right: 1px solid #8DEEEE;
+  display: inline-block;
+}
+
+/*class to hold the squares in place of grid pattern*/
+.grid-top {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  background: rgba(0,0,0,0);
+  margin-left: 49px;
+  font-size: 0;
+}
+
+/*digit border on top of both boards*/
+
+.aTops-top {
+  width: 47.17px;
+  height: 47.1px;
+  border-top: 1px solid #8DEEEE;
+  border-right: 1px solid #8DEEEE;
+  display: table-cell;
+  vertical-align: middle;
+
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+/*alphabet border on left of board*/
+
+.aLeft-top {
+  position: relative;
+  width: 47px;
+  height: 47px;
+  border-top: 1px solid #8DEEEE;
+  border-right: 1px solid #8DEEEE;
+  display: block;
+  line-height: 48px;
+
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+/*is one square to be replicated 100x in grid class*/
+.points-top {
+  position: relative;
+  width: 47px;
+  height: 47px;
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: inline-block;
@@ -121,19 +216,46 @@ html {
 .panel {
   /*float: right;*/
   /*position: absolute;*/
-  width: 755px;
-  height: 175px;
-
+  height: 60%;
+  margin-right: 3%;
+  margin-top: 4%;
   /*margin-top: 25px;*/
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items:flex-end;
+}
+
+.panel-abilities {
+  /*float: right;*/
+  /*position: absolute;*/
+  height: 70%;
+  margin-right: 3%;
+  margin-top: 9%;
+  /*margin-top: 25px;*/
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
 }
 
 /*border location for buttons*/
 .topPanel {
-  width: 45%;
+  width: 80%;
   height: 100%;
-  border: 2px solid #73B1B7;
+  border: 4px solid #73B1B7;
   border-radius: 10px;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+}
+
+.topPanel-abilities {
+  width: 80%;
+  height: 20%;
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
 }
 
 /*not in use*/
@@ -155,36 +277,124 @@ html {
 }
 
 /*aligns text within the console*/
-.text {
+.brick-text {
   /*position: relative;*/
-  width: 92%;
-  height: 86%;
-  margin: 4%;
-  display: inline-block;
 }
 
 /*buttons themselves*/
 .buttons {
   position: relative;
-  display: block;
-  /*width: 150px;*/
-  /*height: 40px;*/
+  display: flex;
+  width: 97%;
+  height: 18%;
 
   margin: 5px;
   border: 1px solid #cccccc;
-  border-radius: 1px;
-  -webkit-border-radius: 1px;
-  -moz-border-radius: 1px;
+  -webkit-border-radius: 10px;
 
   text-align: center;
+  align-items: center;
+  justify-content: space-around;
   line-height: 20px;
 
   cursor: pointer;
 }
 
+.abilities {
+  position: relative;
+  display: flex;
+  width: 97%;
+  height: 95%;
+
+  margin-right: 3px;
+  margin-left: 3px;
+  margin-top: 1px;
+  margin-bottom: 10px;
+  border: 1px solid #cccccc;
+  -webkit-border-radius: 10px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+  line-height: 20px;
+
+  cursor: pointer;
+}
+
+.buttons-group{
+    display: flex;
+    margin-top: 4%;
+    margin-left: 2%;
+}
+
+.buttons-bottom{
+  position: relative;
+  display: flex;
+  width: 100px;
+  height: 100px;
+
+  margin-top: 4%;
+  margin-left: 4%;
+  margin-right: 4%;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 1px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+  line-height: 20px;
+
+  cursor: pointer;
+}
+
+.button-ready{
+  position: relative;
+  display: flex;
+  width: 100px;
+  height: 120px;
+
+  margin-top: 4%;
+  margin-left: 4%;
+  margin-right: 4%;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 1px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+  line-height: 20px;
+
+  cursor: pointer;
+  background-color: #ed9121;
+}
+
+.orientation {
+  background-color: #4fc978;
+}
+
+.button-delete {
+  background-color: #e94B3cff;
+}
+
 /*colors in the buttons when hovered*/
 .buttons:hover {
   background: rgba(169,169,169,0.3);
+}
+
+.orientation:hover {
+  background-color: #00A572;
+}
+
+.button-delete:hover {
+  background-color: #8E0404;
+}
+
+.button-ready:hover {
+  background-color: #C35817;
 }
 
 /*changes the enemy board highlight on hover*/
@@ -421,27 +631,30 @@ html {
   }
 }
 
-/*chat border area*/
-.chat-box {
-  /*position: absolute;*/
-  height: 335px;
-  bottom:30px;
-  margin-top: 30px;
-  left:2%;
-  width:100%;
-  border: 2px solid #73B1B7;
-  border-radius: 10px;
-  overflow: auto;
-
+.chat{
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+    width: 55%;
+    margin-top: 4%;
+    margin-left: 3%;
+    align-items: flex-start;
+    flex: 1;
 }
 
-/*not used currently*/
-.chat-text {
+/*chat border area*/
+.chat-box {
+  height: 70%;
+  left:1%;
+  width:40%;
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  overflow: auto;
 }
 
 * {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /*location for chat input location*/
@@ -459,4 +672,18 @@ html {
 .playerno {
   display: inline;
   /*float: right;*/
+}
+
+.budget-brick {
+  /*position: relative;*/
+  width: 210px;
+  height: 96px;
+  display: flex;
+  background: rgba(144,144,144,0.6);
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  color: green;
+  margin-top: 4%;
+  align-items: center;
+  justify-content: center;
 }

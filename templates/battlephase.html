@@ -1,0 +1,52 @@
+<!Doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Battle Ship</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/battleship.css">
+  <link rel="shortcut icon" href="#" />
+<script type="text/javascript" src="js/battleship.js"></script>
+  <script type="text/javascript" src="js/buttonclick.js"></script>
+</head>
+<body>
+  <div id="main">
+    <div class="board-group2">
+    <div class="board">
+      <div class="displays">
+        <div class="top">
+          <ul class="grid-top"></ul>
+        </div>
+        <div class="panel-abilities">
+          <div class="topPanel-abilities">
+            <div class='abilities abutton1'>abilities1</div>
+            <div class='abilities abutton2'>abilities2</div>
+            <div class='abilities abutton3'>abilities3</div>
+            <div class='abilities abutton4'>abilities4</div>
+            <div class='abilities abutton5'>abilities5</div>
+           </div>
+        </div>
+      </div>
+    </div>
+      <div class="board2">
+        <div class="bottom">
+          <ul class="grid-bottom"></ul>
+        </div>
+      </div>
+      </div>
+    <div class="chat">
+    <div class="chat-box">
+      <div class="chat-text">
+        <ul id="messages"></ul>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="message" placeholder="Message">
+      <button id="sendbutton">Send</button>
+    </div>
+    </div>
+  </div>
+</body>
+</html>

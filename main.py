@@ -2,7 +2,7 @@
    sets up the flask server and links in
    the needed files."""
 
-from flask import Flask, render_template, send_from_directory 
+from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_socketio import SocketIO, send
 from flask_socketio import join_room, leave_room
 from datetime import time
@@ -41,6 +41,15 @@ def index():
     """Function to establish index.html as the main page template for Battleship"""
     return render_template("./index.html")
 
+@app.route('/battlephase')
+def battlephase():
+    """Function to establish index.html as the main page template for Battleship"""
+    return render_template("./battlephase.html")
+
+def redirect():
+    """Function to establish index.html as the main page template for Battleship"""
+    return redirect(url_for('battlephase'))
+
 @socketio.on('join')
 def handleJoin(data):
     """Function to print data upon player joining"""
@@ -65,6 +74,8 @@ def handleMessage(msg):
         handle_delete_ship(msg)
     elif (msg["type"] == "hand-shake"):
         handle_hand_shake(msg)
+    elif (msg["type"] == "ready-up"):
+        handle_ready(msg)
     elif (msg["type"] == "fire"):
         handle_fire(msg)
     print(msg)
@@ -99,10 +110,20 @@ def handle_place_ship(msg):
     else: # If no exceptions arise, check if all ships have been placed
         alert_ship_placement(msg)
         send(msg)
-        if game.ready():
-            send_alert("All ships placed... Player 1 ready to fire!", 
-                       players[player_id])
-            send({"type":"game-begun"},room=players[player_id])
+       # if game.ready():
+            #send_alert("All ships placed... Player 1 ready to fire!",
+                       #players[player_id])
+            #send({"type":"game-begun"},room=players[player_id])
+
+def handle_ready(msg):
+    player_id = msg["id"]
+    player_no = player_numbers[player_id]
+    game = games[players[player_id]]
+    game.ready(player_no)
+
+    if (game.player1_ready and game.player2_ready) == True:
+        send({"type": "game-begun"}, room=players[player_id])
+        print("bi")
 
 def handle_delete_ship(msg):
     """Function to handle the deletion of ships on the board."""
@@ -174,6 +195,7 @@ def handle_fire(msg):
     # Check if game is over
     global game_over
     if (game_over):
+        player_id = msg["id"]
         send({"type":"game-over"},players[player_id])
         return
 
