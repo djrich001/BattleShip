@@ -41,14 +41,10 @@ def index():
     """Function to establish index.html as the main page template for Battleship"""
     return render_template("./index.html")
 
-@app.route('/battlephase')
+@app.route('/battlephase.html', methods=['GET'])
 def battlephase():
-    """Function to establish index.html as the main page template for Battleship"""
+    """Function to establish battlephase.html as the page template for firing phase"""
     return render_template("./battlephase.html")
-
-def redirect():
-    """Function to establish index.html as the main page template for Battleship"""
-    return redirect(url_for('battlephase'))
 
 @socketio.on('join')
 def handleJoin(data):
@@ -110,7 +106,7 @@ def handle_place_ship(msg):
     else: # If no exceptions arise, check if all ships have been placed
         alert_ship_placement(msg)
         send(msg)
-       # if game.ready():
+        #if game.ready():
             #send_alert("All ships placed... Player 1 ready to fire!",
                        #players[player_id])
             #send({"type":"game-begun"},room=players[player_id])
@@ -119,9 +115,11 @@ def handle_ready(msg):
     player_id = msg["id"]
     player_no = player_numbers[player_id]
     game = games[players[player_id]]
-    game.ready(player_no)
+    game.setReady(player_no)
 
-    if (game.player1_ready and game.player2_ready) == True:
+    print(game.ready())
+    if (game.ready()):
+        send_alert("All ships placed... Click the Battle Phase link")
         send({"type": "game-begun"}, room=players[player_id])
         print("bi")
 
@@ -132,7 +130,6 @@ def handle_delete_ship(msg):
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
-#        ship =
         # Remove the ship from the game instance under the appropriate player
         game.removeShip(player_no, msg["shipId"])
     except ValueError as e:

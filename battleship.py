@@ -172,11 +172,15 @@ class BattleshipGame():
     else:
       return self.player2
 
-  def ready(self, player_id):
+  def setReady(self, player_id):
     if player_id == 1:
       self.player1_ready = True;
     else:
       self.player2_ready = True;
+
+  def ready(self):
+    return (self.player1_ready and self.player2_ready)
+    
     # Ensure that no more ships can be placed on either board
     #player1_spent = 0
     #player2_spent = 0
