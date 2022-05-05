@@ -178,6 +178,7 @@ def handle_fire(msg):
         return
 
     try:
+        print("Location: " + msg['location'])
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
@@ -186,8 +187,33 @@ def handle_fire(msg):
         if player_no == game.current_player:
             if msg["shot"] == "normal":
                 hit = game.fire([locations[0]])
-            send_shot(players[player_id], player_no, locations,
-                      hit, msg["shot"])
+                send_shot(players[player_id], player_no, locations,
+                          hit, msg["shot"])
+            elif msg["shot"] == "bomb":
+                # Create list on locations to bomb
+                nums = []
+                location = locations[0]
+                location = location - (location % 10)
+                for i in range(location, location+10):
+                    nums.append(i)
+                locations = nums
+                # Shoot at each location
+                for l in locations:
+                    hit = game.fire([l], more=(True if l != locations[-1] else False))
+                    send_shot(players[player_id], player_no, [l],
+                              hit, msg["shot"])
+                
+                """ get nums to bomb vertical
+                    nums = []
+                    location = location % 10
+                    for i in range(9):
+                        location-to-bomb = 10 * i + location
+                        nums.append(location-to-bomb)
+                """
+                
+                #hit = game.fire([locations[0]])
+            #send_shot(players[player_id], player_no, locations,
+            #          hit, msg["shot"])
             if game.checkGameOver(3-player_no):
                 game_over = True
                 send_alert("GAME OVER, PLAYER " + str(player_no)

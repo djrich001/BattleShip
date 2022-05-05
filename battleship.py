@@ -154,14 +154,15 @@ class BattleshipGame():
         return False
     return True
 
-  def fire(self, locations):
+  def fire(self, locations, more=False):
     hit = False
     enemy_player = (~self.current_player) & 3
     for ship in self.getPlayer(enemy_player):
       for location in locations:
         if ship.hit(location):
           hit = True
-    self.current_player = enemy_player
+    if not more:
+        self.current_player = enemy_player
     return hit
 
   def getPlayer(self, player_id):
