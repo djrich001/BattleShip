@@ -208,6 +208,12 @@ def handle_fire(msg):
         if player_no == game.current_player:
             if msg["shot"] == "normal":
                 hit = game.fire([locations[0]])
+            elif msg["shot"] == "bomb":
+                #TODO: Figure out how to control the locations for whole line
+                hit = game.fire([locations])
+            elif msg["shot"] == "mine":
+                #TODO: Figure out how to control the locations for square of 9 spaces
+                hit = game.fire([locations])
             send_shot(players[player_id], player_no, locations,
                       hit, msg["shot"])
             if game.checkGameOver(3-player_no):
