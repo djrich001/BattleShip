@@ -97,6 +97,9 @@ class BattleshipGame():
     self.players[player_id] = 1
     self.player1 = []
     self.player2 = []
+    # Track timeouts
+    self.player1_timeouts = {'bomb':0, 'strafe':0, 'mine':0}
+    self.player2_timeouts = {'bomb':0, 'strafe':0, 'mine':0}
 
   def addPlayer(self, player_id = "2"):
     self.players[player_id] = player_id
@@ -183,13 +186,12 @@ class BattleshipGame():
     # Return via boolean expression
     return ((player1_spent + 2) > self.shipMaxSpaceCount
       and (player2_spent + 2) > self.shipMaxSpaceCount)
-    
-    #return (len(self.player1) == self.shipMaxPlaceCount 
-    #  and len(self.player2) == self.shipMaxPlaceCount)
 
 
 
-class TestBattleship(unittest.TestCase):
+
+
+"""class TestBattleship(unittest.TestCase):
   def testShipCreation(self):
     self.assertEqual(Ship()._loc, 0)
     self.assertEqual(Ship(4)._loc, 4)
@@ -260,7 +262,7 @@ class TestBattleship(unittest.TestCase):
 
 
 
-
+"""
 
 
 def main():

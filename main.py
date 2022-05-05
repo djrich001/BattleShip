@@ -178,10 +178,23 @@ def handle_fire(msg):
         return
 
     try:
-        print("Location: " + msg['location'])
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
+        
+        # Get the current player ship list
+        player_ships = game.getPlayer(player_id)
+        # Construct player shot availability
+        shots = {'bomb':0, 'strafe':0, 'mine':0}
+        for ship in player_ships:
+            if not ship.dead:
+                if ship.get_len() == 5:
+                    shots['bomb'] += 1
+                elif ship.get_len() == 4:
+                    shots['strafe'] += 1
+                elif ship.get_len() == 3:
+                    shots['mine'] += 1
+        
         locations = [int(msg["location"])]
         hit = False
         if player_no == game.current_player:
@@ -190,30 +203,66 @@ def handle_fire(msg):
                 send_shot(players[player_id], player_no, locations,
                           hit, msg["shot"])
             elif msg["shot"] == "bomb":
-                # Create list on locations to bomb
+                # Check if shot type is available
+                if check_timeouts(game, player_id, "bomb"):
+                    # Set timeouts after checking them - TODO: not working yet
+                    if player_id == 1:
+                        game.player1_timeouts['bomb'] = 5
+                        game.player1_timeouts['strafe'] -= 1
+                        game.player1_timeouts['mine'] -= 1
+                    else:
+                        game.player2_timeouts['bomb'] = 5
+                        game.player2_timeouts['strafe'] -= 1
+                        game.player2_timeouts['mine'] -= 1
+                    # Create list of locations to attack (Horizontal Row)
+                    nums = []
+                    location = locations[0]
+                    location = location - (location % 10)
+                    for i in range(location, location+10):
+                        nums.append(i)
+                    locations = nums
+                    # Shoot at each location
+                    for l in locations:
+                        hit = game.fire([l], more=(True if l != locations[-1] else False))
+                        send_shot(players[player_id], player_no, [l],
+                                  hit, msg["shot"])
+                else:
+                    # Tell player that ability is unavailable
+                    send_alert("Bomb ability currently unavailable.")
+            elif msg["shot"] == "strafe":
+                # Create list of locations to attack (Vertical Column)
                 nums = []
-                location = locations[0]
-                location = location - (location % 10)
-                for i in range(location, location+10):
-                    nums.append(i)
+                location = locations[0] % 10
+                for i in range(10):
+                    nums.append(10 * i + location)
                 locations = nums
                 # Shoot at each location
                 for l in locations:
                     hit = game.fire([l], more=(True if l != locations[-1] else False))
                     send_shot(players[player_id], player_no, [l],
                               hit, msg["shot"])
-                
-                """ get nums to bomb vertical
-                    nums = []
-                    location = location % 10
-                    for i in range(9):
-                        location-to-bomb = 10 * i + location
-                        nums.append(location-to-bomb)
-                """
-                
-                #hit = game.fire([locations[0]])
-            #send_shot(players[player_id], player_no, locations,
-            #          hit, msg["shot"])
+            elif msg["shot"] == "mine":
+                # Create list of locations to attack (Square of 9 points)
+                nums = []
+                location = locations[0]
+                nums.append(location-11)
+                nums.append(location-10)
+                nums.append(location-9)
+                nums.append(location-1)
+                nums.append(location)
+                nums.append(location+1)
+                nums.append(location+9)
+                nums.append(location+10)
+                nums.append(location+11)
+                for num in nums:
+                    if num < 0:
+                        nums.remove(num)
+                locations = nums
+                # Shoot at each location
+                for l in locations:
+                    hit = game.fire([l], more=(True if l != locations[-1] else False))
+                    send_shot(players[player_id], player_no, [l],
+                              hit, msg["shot"])
             if game.checkGameOver(3-player_no):
                 game_over = True
                 send_alert("GAME OVER, PLAYER " + str(player_no)
@@ -223,6 +272,19 @@ def handle_fire(msg):
             send_alert("Wait your turn!")
     except ValueError as e:
         send_alert(str(e))
+
+def check_timeouts(game, player_id, shot_type):
+    """Function to check whether or not an ability is available"""
+    
+    # Get the timeout dictionary
+    timeouts = {}
+    if player_id == 1:
+        timeouts = game.player1_timeouts
+    else:
+        timeouts = game.player2_timeouts
+    
+    # Check the shot type for return
+    return (timeouts[shot_type] <= 0)
 
 def alert_ship_placement(msg, rm=None):
     """Function to set and send ship placement"""
