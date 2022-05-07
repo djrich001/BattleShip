@@ -162,7 +162,46 @@ $(document).ready(function() {
   });
   //on click ready
   $('.button-ready').on('click', function() {
-    if(budget != 17){return}
     sendReady();
   });
+  $('.abutton1').on('click', function() {
+    shot_type = "normal";
+    $('.abutton1').css({'background-color':'#8E0404'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton2').on('click', function() {
+    shot_type = "bomb";
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#8E0404'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton3').on('click', function() {
+    shot_type = "strafe";
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#8E0404'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton4').on('click', function() {
+    shot_type = "mine";
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#8E0404'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton5').on('click', function() {
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#8E0404'});
+  });
+
 });

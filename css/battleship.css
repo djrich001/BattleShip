@@ -87,6 +87,7 @@ body{
   background: #008B8B;
   border-left: 1px solid #8DEEEE;
   border-bottom: 1px solid #8DEEEE;
+  visibility: collapse;
 }
 
 /*class to hold the squares in place of grid pattern*/
@@ -201,7 +202,18 @@ body{
 }
 
 /*to see hits on board (in default state: invisible)*/
-.hole {
+.hole-top {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  margin: 9px;
+  border: 1px solid #8DEEEE;
+  border-radius: 50%;
+  display: table;
+  visibility: hidden;
+}
+
+.hole-bottom {
   position: relative;
   width: 10px;
   height: 10px;
@@ -234,9 +246,10 @@ body{
   margin-top: 9%;
   /*margin-top: 25px;*/
   flex: 1;
-  display: flex;
+  display: none;
   flex-direction: row;
   align-items: flex-start;
+  visibility: collapse;
 }
 
 /*border location for buttons*/
@@ -260,7 +273,7 @@ body{
 
 /*not in use*/
 .bottomPanel {
-  
+
 }
 
 /*holds console location*/
@@ -319,6 +332,23 @@ body{
   line-height: 20px;
 
   cursor: pointer;
+  font-weight: bold;
+}
+
+.abutton1{
+    background-color: #8E0404;
+}
+.abutton2{
+    background-color: #e94B3cff;
+}
+.abutton3{
+    background-color: #e94B3cff;
+}
+.abutton4{
+    background-color: #e94B3cff;
+}
+.abutton5{
+    background-color: #e94B3cff;
 }
 
 .buttons-group{
@@ -395,6 +425,10 @@ body{
 
 .button-ready:hover {
   background-color: #C35817;
+}
+
+.abilities:hover {
+  background-color: #8E0404;
 }
 
 /*changes the enemy board highlight on hover*/
@@ -489,7 +523,7 @@ body{
 }
 
 .error {
-  
+
 }
 
 .turn {
@@ -497,15 +531,15 @@ body{
 }
 
 /*on correct attack fills hole with red tack*/
-.hit {
+.hit-top {
   position: relative;
   margin: 1.5px;
-  width: 15px;
-  height: 15px;
+  width: 30px;
+  height: 30px;
   top: 5px;
   left: 5px;
 
-  
+
   background: rgb(220,10,10);
   border: 1px solid red;
   border-radius: 100%;
@@ -513,27 +547,97 @@ body{
 
   display: table;
 
-  animation-name: expand;
-  animation-duration: 0.5s;
+  animation-name: expand-top;
+  animation-duration: 0.2s;
   animation-iteration-count: 1;
   animation-timing-function: linear;
   animation-fill-mode: none;
 
-  -webkit-animation-name: expand;
-  -webkit-animation-duration: 0.5s;
+  -webkit-animation-name: expand-top;
+  -webkit-animation-duration: 0.2s;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-timing-function: linear;
   -webkit-animation-fill-mode: none;
 
-  -moz-animation-name: expand;
-  -moz-animation-duration: 0.5s;
+  -moz-animation-name: expand-top;
+  -moz-animation-duration: 0.2s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: linear;
+  -moz-animation-fill-mode: none;
+}
+
+.hit-bottom {
+  position: relative;
+  margin: 1.5px;
+  width: 15px;
+  height: 15px;
+  top: 5px;
+  left: 5px;
+
+
+  background: rgb(220,10,10);
+  border: 1px solid red;
+  border-radius: 100%;
+  overflow: hidden;
+
+  display: table;
+
+  animation-name: expand-bottom;
+  animation-duration: 0.2s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+  animation-fill-mode: none;
+
+  -webkit-animation-name: expand-bottom;
+  -webkit-animation-duration: 0.2s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-fill-mode: none;
+
+  -moz-animation-name: expand-bottom;
+  -moz-animation-duration: 0.2s;
   -moz-animation-iteration-count: 1;
   -moz-animation-timing-function: linear;
   -moz-animation-fill-mode: none;
 }
 
 /*on miss attack fill hole with white tack*/
-.miss {
+.miss-top {
+  position: relative;
+  margin: 1.5px;
+  width: 30px;
+  height: 30px;
+  top: 5px;
+  left: 5px;
+
+  background: rgb(250,250,250);
+  border: 1px solid white;
+  border-radius: 100%;
+  overflow: hidden;
+
+  display: table;
+
+  animation: expand-top;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+  animation-fill-mode: none;
+
+  -webkit-animation: expand-top;
+  -webkit-animation-duration: 0.5s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-fill-mode: none;
+
+  -moz-animation: expand-top;
+  -moz-animation-duration: 0.5s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: linear;
+  -moz-animation-fill-mode: none;
+
+}
+
+.miss-bottom {
   position: relative;
   margin: 1.5px;
   width: 15px;
@@ -548,19 +652,19 @@ body{
 
   display: table;
 
-  animation: expand;
+  animation: expand-bottom;
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-timing-function: linear;
   animation-fill-mode: none;
 
-  -webkit-animation: expand;
+  -webkit-animation: expand-bottom;
   -webkit-animation-duration: 0.5s;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-timing-function: linear;
   -webkit-animation-fill-mode: none;
 
-  -moz-animation: expand;
+  -moz-animation: expand-bottom;
   -moz-animation-duration: 0.5s;
   -moz-animation-iteration-count: 1;
   -moz-animation-timing-function: linear;
@@ -568,7 +672,28 @@ body{
 
 }
 
-@keyframes expand {
+@keyframes expand-top {
+  0% {
+    width: 0px;
+    height: 0px;
+    top: 22px;
+    left: 22px;
+  }
+  50% {
+    width: 35px;
+    height: 35px;
+    top: 0px;
+    left: 0px;
+  }
+  100% {
+    width: 30px;
+    height: 30px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+@-webkit-keyframes expand-top {
   0% {
     width: 0px;
     height: 0px;
@@ -589,7 +714,7 @@ body{
   }
 }
 
-@-webkit-keyframes expand {
+@-moz-keyframes expand-top {
   0% {
     width: 0px;
     height: 0px;
@@ -610,7 +735,49 @@ body{
   }
 }
 
-@-moz-keyframes expand {
+@keyframes expand-bottom {
+  0% {
+    width: 0px;
+    height: 0px;
+    top: 12.5px;
+    left: 12.5px;
+  }
+  50% {
+    width: 25px;
+    height: 25px;
+    top: 0px;
+    left: 0px;
+  }
+  100% {
+    width: 15px;
+    height: 15px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+@-webkit-keyframes expand-bottom {
+  0% {
+    width: 0px;
+    height: 0px;
+    top: 12.5px;
+    left: 12.5px;
+  }
+  50% {
+    width: 25px;
+    height: 25px;
+    top: 0px;
+    left: 0px;
+  }
+  100% {
+    width: 15px;
+    height: 15px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+@-moz-keyframes expand-bottom {
   0% {
     width: 0px;
     height: 0px;

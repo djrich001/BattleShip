@@ -30,11 +30,11 @@ $(document).ready(function() {
         if (i < 11) {
             $(".top").prepend("<span class='aTops-top'>" + Math.abs(i - 11) + "</span>");
             $(".bottom").prepend("<span class='aTops-bottom'>" + Math.abs(i - 11) + "</span>");
-            $(".grid-top").append("<li class='points-top offset1 " + i + "'><span class='hole'></li>");
-            $(".grid-bottom").append("<li class='points-bottom offset1 " + i + "'><span class='hole'></li>");
+            $(".grid-top").append("<li class='points-top offset1 " + i + "'><span class='hole-top'></li>");
+            $(".grid-bottom").append("<li class='points-bottom offset1 " + i + "'><span class='hole-bottom'></li>");
         } else {
-            $(".grid-top").append("<li class='points-top offset2 " + i + "'><span class='hole'></li>");
-            $(".grid-bottom").append("<li class='points-bottom offset2 " + i + "'><span class='hole'></li>");
+            $(".grid-top").append("<li class='points-top offset2 " + i + "'><span class='hole-top'></li>");
+            $(".grid-bottom").append("<li class='points-bottom offset2 " + i + "'><span class='hole-bottom'></li>");
         }
         if (i == 11) {
             $(".top").prepend("<span class='aTops-top' style='color:red;'>E</span>");
@@ -78,24 +78,30 @@ $(document).ready(function() {
         else if (msg.type == "game-begun"){
             phase = "firing";
             turn = 1;
-           // window.location.href = "battleship.html";
-           // changeBoardSize();
+            changeBoard();
         }
         else if (msg.type == "fire" && phase == "firing"){
             turn = 3-msg.player_no;
-            hit = msg.hit ? "hit" : "miss";
+            hitTop = msg.hit ? "hit-top" : "miss-top";
+            hitBottom = msg.hit ? "hit-bottom" : "miss-bottom";
             board = (msg.player_no == player_no) ? ".top" : ".bottom";
             for (i = 0; i < msg.locations.length; i++){
                 loc = msg.locations[i] + 1
                 //adds red dot to hole class (default white)
-                $(board).find("."+(loc)).children().addClass(hit);
+                if(board == ".top"){
+                    $(board).find("."+(loc)).children().addClass(hitTop);
+                }
+                else{
+                    $(board).find("."+(loc)).children().addClass(hitBottom);
+                }
+                console.log(board);
                 //sets the hole class to visible to make the attacks visible
                 $(board).find("."+(loc)).children().css({'visibility':'visible'});
                 console.log("here:"+loc)
                 console.log($(board).find(String(loc)).children());
             }
             $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
-                + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
+                + " shot at location " + String(msg.locations[0]+1) + ", " + hitTop + "!");
         }
         else if (msg.type == "game_over"){
             phase = "game_over"
@@ -136,15 +142,16 @@ var enemyBoard = {
     allHits: [],
     highlight: function(square) {
         //on hover of enemy board add highlight
-    if(!($(square).children().hasClass('hole hit'))){
+    if(!(($(square).children().hasClass("hit-top")) || ($(square).children().hasClass("miss-top")))){
         $(square).addClass("target").off("mouseleave").on("mouseleave", function() {
             $(this).removeClass("target");
         });
     }
         //on click trigger fire (sends msg to main.py)
         $(square).off("click").on("click", function() {
-            if(!($(this).children().hasClass("hole hit"))) {
-                var num = parseInt($(this).attr("class").slice(22));
+            if(!(($(this).children().hasClass("hit-top")) || ($(this).children().hasClass("miss-top")))) {
+                var num = parseInt($(this).attr("class").slice(19));
+                console.log(num);
                 fire(num);
 
                 //if (false == bool) {
@@ -345,10 +352,43 @@ function fire(location) {
     }
 }
 
-function changeBoardSize(){
+function changeBoard(){
+    $('.shiphover').remove();
+    $('.panel').remove();
+    $('.button-ready').remove();
+    //$('div').remove('.board-group')
+   $('#main').prepend('<div class="board-group2"></div>');
+   $('.board-group2').prepend('<div class="board"></div>');
+   $('.board').prepend('<div class="displays"></div>');
+   $('.top').prependTo($('.displays'));
+   $('.panel-abilities').appendTo($('.displays'));
+   //$('.displays').append('<div class="panel-abilities"></div>');
+   //$('.panel-abilities').append('<div class="topPanel-abilities"></div>');
+   //$('.topPanel-abilities').append('<div class="abilities abutton1"></div>');
+   //$('.abutton1').text("Normal");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton2"></div>'));
+   //$('.abutton2').text("Bomb");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton3"></div>'));
+   //$('.abutton3').text("Strafe");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton4"></div>'));
+   //$('.abutton4').text("Mine");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton5"></div>'));
+   //$('.abutton5').text("???");
+
+   $('.board-group2').append('<div class="board2"></div>');
+   $('.bottom').prependTo($('.board2'));
+   //$('.board2').prepend('<div class="bottom"></div>');
+   //$('.bottom').prepend('<ul class="grid-bottom"></ul>');
+   $('div').remove('.board-group')
+   $('.top').css({'visibility':'visible'});
+   $('.panel-abilities').css({
+    'visibility':'visible',
+    'display':'flex'
+   });
+
     $('.bottom').css({
         'width':'330px',
-        'height':'330px',
+        'height':'330px'
         });
     $('.grid-bottom').css({
         'width':'300px',

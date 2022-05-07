@@ -3,7 +3,7 @@
    the needed files."""
 
 from flask import Flask, render_template, send_from_directory, redirect, url_for
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 from flask_socketio import join_room, leave_room
 from datetime import time
 from uuid import uuid4
@@ -16,7 +16,7 @@ from battleship import BattleshipGame
 
 # Global variables
 debug = True
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__, template_folder="templates")
 app.config['SECRET_KEY'] = 'GreatBigSecret'
 socketio = SocketIO(app,cors_allowed_origins = '*') # cors_allowed_origins set to * to allow access from any IP
 message_history = []
@@ -40,11 +40,6 @@ def send_js(path):
 def index():
     """Function to establish index.html as the main page template for Battleship"""
     return render_template("./index.html")
-
-@app.route('/battlephase.html', methods=['GET'])
-def battlephase():
-    """Function to establish battlephase.html as the page template for firing phase"""
-    return render_template("./battlephase.html")
 
 @socketio.on('join')
 def handleJoin(data):
@@ -106,7 +101,7 @@ def handle_place_ship(msg):
     else: # If no exceptions arise, check if all ships have been placed
         alert_ship_placement(msg)
         send(msg)
-        #if game.ready():
+       # if game.ready():
             #send_alert("All ships placed... Player 1 ready to fire!",
                        #players[player_id])
             #send({"type":"game-begun"},room=players[player_id])
@@ -115,13 +110,10 @@ def handle_ready(msg):
     player_id = msg["id"]
     player_no = player_numbers[player_id]
     game = games[players[player_id]]
-    game.setReady(player_no)
+    game.ready(player_no)
 
-    print(game.ready())
-    if (game.ready()):
-        send_alert("All ships placed... Click the Battle Phase link")
+    if (game.player1_ready and game.player2_ready) == True:
         send({"type": "game-begun"}, room=players[player_id])
-        print("bi")
 
 def handle_delete_ship(msg):
     """Function to handle the deletion of ships on the board."""
@@ -130,6 +122,7 @@ def handle_delete_ship(msg):
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
+#        ship =
         # Remove the ship from the game instance under the appropriate player
         game.removeShip(player_no, msg["shipId"])
     except ValueError as e:
@@ -193,29 +186,144 @@ def handle_fire(msg):
     global game_over
     if (game_over):
         player_id = msg["id"]
-        send({"type":"game-over"},players[player_id])
+        send({"type":"game-over"})
         return
 
     try:
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
+        # Get the current player ship list
+        player_ships = game.getPlayer(player_id)
+        # Construct player shot availability
+        shots = {'bomb': 0, 'strafe': 0, 'mine': 0}
+        for ship in player_ships:
+            if not ship.dead():
+                if ship.get_len() == 5:
+                    shots['bomb'] += 1
+                elif ship.get_len() == 4:
+                    shots['strafe'] += 1
+                elif ship.get_len() == 3:
+                    shots['mine'] += 1
+        print(f"shots: {shots}")
         locations = [int(msg["location"])]
         hit = False
         if player_no == game.current_player:
             if msg["shot"] == "normal":
                 hit = game.fire([locations[0]])
-            send_shot(players[player_id], player_no, locations,
+                send_shot(players[player_id], player_no, locations,
                       hit, msg["shot"])
+            elif msg["shot"] == "bomb":
+                # Check if shot type is available
+                if check_timeouts(game, player_no, 'bomb'):
+                    # Set timeouts after checking them
+                    if player_no == 1:
+                        game.player1_timeouts['bomb'] = 5
+                        game.player1_timeouts['strafe'] -= shots['strafe']
+                        game.player1_timeouts['mine'] -= shots['mine']
+                    elif player_no == 2:
+                        game.player2_timeouts['bomb'] = 5
+                        game.player2_timeouts['strafe'] -= shots['strafe']
+                        game.player2_timeouts['mine'] -= shots['mine']
+                    print(game.player1_timeouts)
+                    print(game.player2_timeouts)
+                    # Create list of locations to attack (Horizontal Row)
+                    nums = []
+                    location = locations[0]
+                    location = location - (location % 10)
+                    for i in range(location, location+10):
+                        nums.append(i)
+                    locations = nums
+                    # Shoot at each location
+                    for l in locations:
+                        hit = game.fire([l], more=(True if l != locations[-1] else False))
+                        send_shot(players[player_id], player_no, [l],
+                                  hit, msg["shot"])
+                else:
+                    # Tell player that ability is unavailable
+                    send_alert("Bomb ability currently unavailable.")
+            elif msg["shot"] == "strafe":
+                # Check if shot type is available
+                if check_timeouts(game, player_no, 'bomb'):
+                    # Set timeouts after checking them
+                    if player_no == 1:
+                        game.player1_timeouts['bomb'] -= shots['bomb']
+                        game.player1_timeouts['strafe'] = 5
+                        game.player1_timeouts['mine'] -= shots['mine']
+                    elif player_no == 2:
+                        game.player2_timeouts['bomb'] -= shots['bomb']
+                        game.player2_timeouts['strafe'] = 5
+                        game.player2_timeouts['mine'] -= shots['mine']
+                    print(game.player1_timeouts)
+                    print(game.player2_timeouts)
+                    # Create list of locations to attack (Vertical Column)
+                    nums = []
+                    location = locations[0] % 10
+                    for i in range(10):
+                        nums.append(10 * i + location)
+                    locations = nums
+                    # Shoot at each location
+                    for l in locations:
+                        hit = game.fire([l], more=(True if l != locations[-1] else False))
+                        send_shot(players[player_id], player_no, [l],
+                                  hit, msg["shot"])
+            elif msg["shot"] == "mine":
+                # Check if shot type is available
+                if check_timeouts(game, player_no, 'bomb'):
+                    # Set timeouts after checking them
+                    if player_no == 1:
+                        game.player1_timeouts['bomb'] -= shots['bomb']
+                        game.player1_timeouts['strafe'] -= shots['strafe']
+                        game.player1_timeouts['mine'] = 5
+                    elif player_no == 2:
+                        game.player2_timeouts['bomb'] -= shots['bomb']
+                        game.player2_timeouts['strafe'] -= shots['strafe']
+                        game.player2_timeouts['mine'] = 5
+                    print(game.player1_timeouts)
+                    print(game.player2_timeouts)
+                    # Create list of locations to attack (Square of 9 points)
+                    nums = []
+                    location = locations[0]
+                    nums.append(location-11)
+                    nums.append(location-10)
+                    nums.append(location-9)
+                    nums.append(location-1)
+                    nums.append(location)
+                    nums.append(location+1)
+                    nums.append(location+9)
+                    nums.append(location+10)
+                    nums.append(location+11)
+                    for num in nums:
+                        if num < 0:
+                            nums.remove(num)
+                    locations = nums
+                    # Shoot at each location
+                    for l in locations:
+                        hit = game.fire([l], more=(True if l != locations[-1] else False))
+                        send_shot(players[player_id], player_no, [l],
+                                  hit, msg["shot"])
             if game.checkGameOver(3-player_no):
                 game_over = True
                 send_alert("GAME OVER, PLAYER " + str(player_no)
                         + " WINS!!", players[player_id])
-                send({"type":"game-over"},players[player_id])
+                send({"type":"game_over"})
         else:
             send_alert("Wait your turn!")
     except ValueError as e:
         send_alert(str(e))
+
+
+def check_timeouts(game, player_id, shot_type):
+    """Function to check whether or not an ability is available"""
+
+    print(f"Player: {player_id}")
+    # Get the timeout dictionary
+    if player_id == 1:
+        timeouts = game.player1_timeouts
+        return game.player1_timeouts['bomb'] <= 0
+    elif player_id == 2:
+        timeouts = game.player2_timeouts
+        return game.player2_timeouts['bomb'] <= 0
 
 def alert_ship_placement(msg, rm=None):
     """Function to set and send ship placement"""
