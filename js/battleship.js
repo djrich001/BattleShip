@@ -11,6 +11,7 @@ var active_orientation = "horz";
 var phase = "placement";
 var ship = null;
 var shipCounter = 0;
+var budget = 0;
 ships = {
   "Carrier": 5, 
   "Battleship":4, 
@@ -27,20 +28,22 @@ $(document).ready(function() {
     //and the alphabet and digits
     for (var i = 1; i <= 100; i++) {
         if (i < 11) {
-            $(".top").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
-            $(".bottom").prepend("<span class='aTops'>" + Math.abs(i - 11) + "</span>");
-            $(".grid").append("<li class='points offset1 " + i + "'><span class='hole'></li>");
+            $(".top").prepend("<span class='aTops-top'>" + Math.abs(i - 11) + "</span>");
+            $(".bottom").prepend("<span class='aTops-bottom'>" + Math.abs(i - 11) + "</span>");
+            $(".grid-top").append("<li class='points-top offset1 " + i + "'><span class='hole-top'></li>");
+            $(".grid-bottom").append("<li class='points-bottom offset1 " + i + "'><span class='hole-bottom'></li>");
         } else {
-            $(".grid").append("<li class='points offset2 " + i + "'><span class='hole'></li>");
+            $(".grid-top").append("<li class='points-top offset2 " + i + "'><span class='hole-top'></li>");
+            $(".grid-bottom").append("<li class='points-bottom offset2 " + i + "'><span class='hole-bottom'></li>");
         }
         if (i == 11) {
-            $(".top").prepend("<span class='aTops' style='color:red;'>E</span>");
-            $(".bottom").prepend("<span class='aTops' style='color:blue;'>P</span>");
+            $(".top").prepend("<span class='aTops-top' style='color:red;'>E</span>");
+            $(".bottom").prepend("<span class='aTops-bottom' style='color:blue;'>P</span>");
         }
         if (i > 90) {
-            $(".top").append("<span class='aLeft'>" + 
+            $(".top").append("<span class='aLeft-top'>" +
                 String.fromCharCode(97 + (i - 91)).toUpperCase() + "</span>");
-            $(".bottom").append("<span class='aLeft'>" + 
+            $(".bottom").append("<span class='aLeft-bottom'>" +
                 String.fromCharCode(97 + (i - 91)).toUpperCase() + "</span>");
         }
     };
@@ -65,6 +68,7 @@ $(document).ready(function() {
         }
         else if (msg.type == "place-ship" && phase == "placement"){
             placeShip(Number(msg.location)+1, Number(msg.length), msg.direction, msg.ship);
+            $('.budget-brick').text("Ship Budget: " + budget + "/17");
         }
         else if (msg.type == "delete-ship" && phase == "placement"){
         }
@@ -74,22 +78,30 @@ $(document).ready(function() {
         else if (msg.type == "game-begun"){
             phase = "firing";
             turn = 1;
+            changeBoard();
         }
         else if (msg.type == "fire" && phase == "firing"){
             turn = 3-msg.player_no;
-            hit = msg.hit ? "hit" : "miss";
+            hitTop = msg.hit ? "hit-top" : "miss-top";
+            hitBottom = msg.hit ? "hit-bottom" : "miss-bottom";
             board = (msg.player_no == player_no) ? ".top" : ".bottom";
             for (i = 0; i < msg.locations.length; i++){
                 loc = msg.locations[i] + 1
                 //adds red dot to hole class (default white)
-                $(board).find("."+(loc)).children().addClass(hit);
+                if(board == ".top"){
+                    $(board).find("."+(loc)).children().addClass(hitTop);
+                }
+                else{
+                    $(board).find("."+(loc)).children().addClass(hitBottom);
+                }
+                console.log(board);
                 //sets the hole class to visible to make the attacks visible
                 $(board).find("."+(loc)).children().css({'visibility':'visible'});
                 console.log("here:"+loc)
                 console.log($(board).find(String(loc)).children());
             }
             $(".text").text("Player " + String(msg.player_no) + " fired " + msg.shot
-                + " shot at location " + String(msg.locations[0]+1) + ", " + hit + "!");
+                + " shot at location " + String(msg.locations[0]+1) + ", " + hitTop + "!");
         }
         else if (msg.type == "game_over"){
             phase = "game_over"
@@ -98,6 +110,7 @@ $(document).ready(function() {
 
     $('#sendbutton').on('click', function() {
         sendChatMessage();
+        changeBoardSize();
     });
     $("#message").on('keyup', function (e) {
         if (e.keyCode == 13) {
@@ -106,13 +119,13 @@ $(document).ready(function() {
     });
 
     //on enter into enemy board trigger highlight of square
-    $(".top").find(".points").off("mouseenter mouseover").on("mouseenter mouseover", function() {
+    $(".top").find(".points-top").off("mouseenter mouseover").on("mouseenter mouseover", function() {
         if(!($(this).hasClass("used")) && phase == "firing") enemyBoard.highlight(this);
     });
 
     //on enter into your board trigger delete ship, hightlight vert or horz
-    $(".bottom").find(".points").off("mouseenter").on("mouseenter", function() {
-        var num = $(this).attr('class').slice(15);
+    $(".bottom").find(".points-bottom").off("mouseenter").on("mouseenter", function() {
+        var num = $(this).attr('class').slice(22);
         ship_len = ships[ship];
         //if no ship selected: initiate delete ship on clicked ship
         if (ship == null){
@@ -129,14 +142,16 @@ var enemyBoard = {
     allHits: [],
     highlight: function(square) {
         //on hover of enemy board add highlight
+    if(!(($(square).children().hasClass("hit-top")) || ($(square).children().hasClass("miss-top")))){
         $(square).addClass("target").off("mouseleave").on("mouseleave", function() {
-            $(this).removeClass("target"); 
+            $(this).removeClass("target");
         });
+    }
         //on click trigger fire (sends msg to main.py)
         $(square).off("click").on("click", function() {
-            if(!($(this).hasClass("used"))) {
-                // $(this).removeClass("target").addClass("used");
-                var num = parseInt($(this).attr("class").slice(15));
+            if(!(($(this).children().hasClass("hit-top")) || ($(this).children().hasClass("miss-top")))) {
+                var num = parseInt($(this).attr("class").slice(19));
+                console.log(num);
                 fire(num);
 
                 //if (false == bool) {
@@ -152,6 +167,8 @@ var enemyBoard = {
 //after msg sent add ship on html page
 function placeShip(location, length, direction, ship) {
     if (phase == "placement"){
+        budget += parseInt(length);
+        console.log(budget)
         if (direction == "horizontal"){
             for (var i = location; i < (location + length); i++) {
                 $(".bottom ." + i).addClass(ship).attr("id",shipCounter);
@@ -240,6 +257,7 @@ function displayShipVert(location, length, point) {
                 inc = inc + boardWidth;
             }
             $(point).off("click").on("click", function() {
+                shipCounter++;
                 sendShip(locationMod);
             });
         }
@@ -265,25 +283,30 @@ function removeShipVert(location, length) {
 function deleteShipClient(location, point){
     if (phase == "placement"){
         var getId = $('.bottom .' + location).attr('id');
-        var getClass = ($('.bottom .' + location).attr('class')).split(" ");
-        var getShipName = getClass[getClass.length - 1];
+        if(!(getId == undefined)){
+            var getClass = ($('.bottom .' + location).attr('class')).split(" ");
+            var getShipName = getClass[getClass.length - 1];
+            var passShipBudget = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
 
-        $(point).off("click").on("click", function() {
-            for(var i = 0; i < 100; i++){
-                $('.bottom .' + i + '[id=' + getId + ']').removeClass(getShipName).removeAttr("id");
-            }
-            deleteShipServer(getId)
-            // might return later - trying to make deleting a ship look like picking it up
-            //      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
-            //      $('.carrierhover').css({'visibility':'visible'});
-            //      console.log(ship)
-        });
+            $(point).off("click").on("click", function() {
+                for(var i = 0; i < 100; i++){
+                    $('.bottom .' + i + '[id=' + getId + ']').removeClass(getShipName).removeAttr("id");
+                }
+                deleteShipServer(getId)
+                budget -= ships[passShipBudget];
+                $('.budget-brick').text("Ship Budget: " + budget + "/17");
+                // might return later - trying to make deleting a ship look like picking it up
+                //      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
+                //      $('.carrierhover').css({'visibility':'visible'});
+                //      console.log(ship)
+            });
+        }
     }
 }
 
 function sendChatMessage(){
     socket.send({
-        name: $('#name').val(),
+        name: "Player: " + player_no,
         message:$('#message').val(),
         type:"chat"
     });
@@ -311,6 +334,13 @@ function deleteShipServer(getId){
     });
 }
 
+function sendReady(){
+    socket.send({
+        type:"ready-up",
+        id: player_id
+    });
+}
+
 function fire(location) {
     if (phase == "firing"){
         socket.send({
@@ -320,4 +350,62 @@ function fire(location) {
             id:player_id
         });
     }
+}
+
+function changeBoard(){
+    $('.shiphover').remove();
+    $('.panel').remove();
+    $('.button-ready').remove();
+    //$('div').remove('.board-group')
+   $('#main').prepend('<div class="board-group2"></div>');
+   $('.board-group2').prepend('<div class="board"></div>');
+   $('.board').prepend('<div class="displays"></div>');
+   $('.top').prependTo($('.displays'));
+   $('.panel-abilities').appendTo($('.displays'));
+   //$('.displays').append('<div class="panel-abilities"></div>');
+   //$('.panel-abilities').append('<div class="topPanel-abilities"></div>');
+   //$('.topPanel-abilities').append('<div class="abilities abutton1"></div>');
+   //$('.abutton1').text("Normal");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton2"></div>'));
+   //$('.abutton2').text("Bomb");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton3"></div>'));
+   //$('.abutton3').text("Strafe");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton4"></div>'));
+   //$('.abutton4').text("Mine");
+   //$('.topPanel-abilities').append($('<div class="abilities abutton5"></div>'));
+   //$('.abutton5').text("???");
+
+   $('.board-group2').append('<div class="board2"></div>');
+   $('.bottom').prependTo($('.board2'));
+   //$('.board2').prepend('<div class="bottom"></div>');
+   //$('.bottom').prepend('<ul class="grid-bottom"></ul>');
+   $('div').remove('.board-group')
+   $('.top').css({'visibility':'visible'});
+   $('.panel-abilities').css({
+    'visibility':'visible',
+    'display':'flex'
+   });
+
+    $('.bottom').css({
+        'width':'330px',
+        'height':'330px'
+        });
+    $('.grid-bottom').css({
+        'width':'300px',
+        'height':'300px',
+        'margin-left': '30px'
+    });
+    $('.aTops-bottom').css({
+        'width':'29px',
+        'height':'29px'
+    });
+    $('.aLeft-bottom').css({
+        'width':'29px',
+        'height':'29px',
+        'line-height':'29px'
+    });
+    $('.points-bottom').css({
+        'width':'29px',
+        'height':'29px'
+    });
 }

@@ -1,5 +1,19 @@
 $(document).ready(function() {
 
+    //if hover brick visible and click outside board
+    //make all bricks invis
+    $(document).mouseup(function(e){
+        var container = $('.board');
+
+        if(!container.is(e.target) && container.has(e.target).length === 0){
+            $('.carrierhover').css({'visibility':'hidden'});
+            $('.battleshiphover').css({'visibility':'hidden'});
+            $('.cruiserhover').css({'visibility':'hidden'});
+            $('.submarinehover').css({'visibility':'hidden'});
+            $('.destroyerhover').css({'visibility':'hidden'});
+            ship = null;
+        }
+    });
     //has all ships follow mouse
       $(document).mousemove(function(e){
         $('.carrierhover').css({
@@ -94,7 +108,7 @@ $(document).ready(function() {
         ship = null;
     });
   });
-//on click of vert/horz button change ship hover size
+  //on click of vert/horz button change ship hover size
   $('.orientation').on('click', function() {
     direction = $(".orientation").text();
     if (direction == "Horizontal"){
@@ -146,4 +160,48 @@ $(document).ready(function() {
       });
     }
   });
+  //on click ready
+  $('.button-ready').on('click', function() {
+    sendReady();
+  });
+  $('.abutton1').on('click', function() {
+    shot_type = "normal";
+    $('.abutton1').css({'background-color':'#8E0404'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton2').on('click', function() {
+    shot_type = "bomb";
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#8E0404'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton3').on('click', function() {
+    shot_type = "strafe";
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#8E0404'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton4').on('click', function() {
+    shot_type = "mine";
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#8E0404'});
+    $('.abutton5').css({'background-color':'#e94B3cff'});
+  });
+  $('.abutton5').on('click', function() {
+    $('.abutton1').css({'background-color':'#e94B3cff'});
+    $('.abutton2').css({'background-color':'#e94B3cff'});
+    $('.abutton3').css({'background-color':'#e94B3cff'});
+    $('.abutton4').css({'background-color':'#e94B3cff'});
+    $('.abutton5').css({'background-color':'#8E0404'});
+  });
+
 });

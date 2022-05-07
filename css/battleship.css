@@ -1,24 +1,81 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300&family=Press+Start+2P&display=swap');
 html {
-  width: 100%;
-  height: 100%;
+   height: 100vh;
+   width: 100vw;
+   background-color: #D5D5D2;/*#99CCFF;*/
+   font-family: 'Oswald', sans-serif;
+}
+
+body{
+    height: 97%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 /*sets the borders on the left and right*/
 #main {
-  width: 755px;
-  height: 800px;
-  margin: auto;
-
+  width: 90%;
+  height: 90%;
+  margin-top: 2%;
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-bottom: 2%;
+  /*background-color: white;*/
+  display: flex;
+  box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
 }
+
+.title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 5vh;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 200;
+  text-shadow: 3px 3px #0067A5;
+}
+
+.board-group{
+  display: flex;
+  flex-direction: column;
+  align-items:flex-end;
+  height: 60%;
+}
+
+.board-group2{
+  display: flex;
+ flex-direction: row;
+  align-items:flex-start;
+  height: 72.5%;
+  margin-left: 10%;
+}
+
+.board2{
+  width: 385px;
+  height: 385px;
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  display: flex;
+  flex: 1;
+  margin-top: 2%;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2%;
+}
+
 /*is the area within the blue border*/
 .board {
-  /*position: absolute;*/
-  width: 755px; 
-  height: 380px;
-  margin: 25px auto;
-  border: 2px solid #73B1B7;
+  width: 585px;
+  height: 585px;
+  border: 4px solid #73B1B7;
   border-radius: 10px;
+  display: flex;
+  flex: 1;
+  margin-top: 2%;
 }
 /*another border within board, to hold bottom and top*/
 .displays {
@@ -28,10 +85,9 @@ html {
 
 /*is the controlling players board*/
 .bottom {
-  width: 330px;
-  height: 330px;
-  margin-top: -330px;
-  background: #008B8B;
+  width: 530px;
+  height: 530px;
+  background: #0067A5;
   border-left: 1px solid #8DEEEE;
   border-bottom: 1px solid #8DEEEE;
 
@@ -39,28 +95,29 @@ html {
 
 /*is the enemy board*/
 .top {
-  width: 330px;
-  height: 330px;
-  margin-left: 375px;
-  background: #008B8B;
+  width: 530px;
+  height: 530px;
+  background: #0067A5;
   border-left: 1px solid #8DEEEE;
   border-bottom: 1px solid #8DEEEE;
+  visibility: collapse;
 }
 
 /*class to hold the squares in place of grid pattern*/
-.grid {
+.grid-bottom {
   position: absolute;
-  width: 300px;
-  height: 300px;
+  width: 480px;
+  height: 480px;
   background: rgba(0,0,0,0);
-  margin-left: 30px;
+  margin-left: 49px;
   font-size: 0;
 }
 
 /*digit border on top of both boards*/
-.aTops {
-  width: 29px;
-  height: 29px;
+
+.aTops-bottom {
+  width: 47.17px;
+  height: 47.1px;
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: table-cell;
@@ -72,14 +129,15 @@ html {
 }
 
 /*alphabet border on left of board*/
-.aLeft {
+
+.aLeft-bottom {
   position: relative;
-  width: 29px;
-  height: 29px;
+  width: 47px;
+  height: 47px;
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: block;
-  line-height: 29px;
+  line-height: 48px;
 
   font-weight: bold;
   color: white;
@@ -87,10 +145,61 @@ html {
 }
 
 /*is one square to be replicated 100x in grid class*/
-.points {
+.points-bottom {
   position: relative;
-  width: 29px;
-  height: 29px;
+  width: 47px;
+  height: 47px;
+  border-top: 1px solid #8DEEEE;
+  border-right: 1px solid #8DEEEE;
+  display: inline-block;
+}
+
+/*class to hold the squares in place of grid pattern*/
+.grid-top {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  background: rgba(0,0,0,0);
+  margin-left: 49px;
+  font-size: 0;
+}
+
+/*digit border on top of both boards*/
+
+.aTops-top {
+  width: 47.17px;
+  height: 47.1px;
+  border-top: 1px solid #8DEEEE;
+  border-right: 1px solid #8DEEEE;
+  display: table-cell;
+  vertical-align: middle;
+
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+/*alphabet border on left of board*/
+
+.aLeft-top {
+  position: relative;
+  width: 47px;
+  height: 47px;
+  border-top: 1px solid #8DEEEE;
+  border-right: 1px solid #8DEEEE;
+  display: block;
+  line-height: 48px;
+
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+/*is one square to be replicated 100x in grid class*/
+.points-top {
+  position: relative;
+  width: 47px;
+  height: 47px;
   border-top: 1px solid #8DEEEE;
   border-right: 1px solid #8DEEEE;
   display: inline-block;
@@ -106,7 +215,18 @@ html {
 }
 
 /*to see hits on board (in default state: invisible)*/
-.hole {
+.hole-top {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  margin: 9px;
+  border: 1px solid #8DEEEE;
+  border-radius: 50%;
+  display: table;
+  visibility: hidden;
+}
+
+.hole-bottom {
   position: relative;
   width: 10px;
   height: 10px;
@@ -121,24 +241,52 @@ html {
 .panel {
   /*float: right;*/
   /*position: absolute;*/
-  width: 755px;
-  height: 175px;
-
+  height: 60%;
+  margin-right: 3%;
+  margin-top: 4%;
   /*margin-top: 25px;*/
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items:flex-end;
+}
+
+.panel-abilities {
+  /*float: right;*/
+  /*position: absolute;*/
+  height: 70%;
+  margin-right: 3%;
+  margin-top: 9%;
+  /*margin-top: 25px;*/
+  flex: 1;
+  display: none;
+  flex-direction: row;
+  align-items: flex-start;
+  visibility: collapse;
 }
 
 /*border location for buttons*/
 .topPanel {
-  width: 45%;
+  width: 80%;
   height: 100%;
-  border: 2px solid #73B1B7;
+  border: 4px solid #73B1B7;
   border-radius: 10px;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+}
+
+.topPanel-abilities {
+  width: 80%;
+  height: 20%;
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
 }
 
 /*not in use*/
 .bottomPanel {
-  
+
 }
 
 /*holds console location*/
@@ -148,43 +296,153 @@ html {
   height: 100%;
   display: inline;
   float:right;
-  background: rgba(144,144,144,0.6);
+  background: #F5F5F5;/*rgba(144,144,144,0.6);*/
   border: 2px solid #73B1B7;
   border-radius: 10px;
   color: green;
 }
 
 /*aligns text within the console*/
-.text {
+.brick-text {
   /*position: relative;*/
-  width: 92%;
-  height: 86%;
-  margin: 4%;
-  display: inline-block;
 }
 
 /*buttons themselves*/
 .buttons {
   position: relative;
-  display: block;
-  /*width: 150px;*/
-  /*height: 40px;*/
+  display: flex;
+  width: 97%;
+  height: 18%;
 
   margin: 5px;
+  background: #ff8b3d;
   border: 1px solid #cccccc;
-  border-radius: 1px;
-  -webkit-border-radius: 1px;
-  -moz-border-radius: 1px;
+  -webkit-border-radius: 10px;
 
   text-align: center;
+  align-items: center;
+  justify-content: space-around;
   line-height: 20px;
 
   cursor: pointer;
 }
 
+.abilities {
+  position: relative;
+  display: flex;
+  width: 97%;
+  height: 95%;
+
+  margin-right: 3px;
+  margin-left: 3px;
+  margin-top: 1px;
+  margin-bottom: 10px;
+  border: 1px solid #cccccc;
+  -webkit-border-radius: 10px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+  line-height: 20px;
+
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.abutton1{
+    background-color: #8E0404;
+}
+.abutton2{
+    background-color: #e94B3cff;
+}
+.abutton3{
+    background-color: #e94B3cff;
+}
+.abutton4{
+    background-color: #e94B3cff;
+}
+.abutton5{
+    background-color: #e94B3cff;
+}
+
+.buttons-group{
+    display: flex;
+    margin-top: 4%;
+    margin-left: 2%;
+}
+
+.buttons-bottom{
+  position: relative;
+  display: flex;
+  width: 100px;
+  height: 100px;
+
+  margin-top: 4%;
+  margin-left: 4%;
+  margin-right: 4%;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 1px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+  line-height: 20px;
+
+  cursor: pointer;
+}
+
+.button-ready{
+  position: relative;
+  display: flex;
+  width: 100px;
+  height: 120px;
+
+  margin-top: 4%;
+  margin-left: 4%;
+  margin-right: 4%;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 1px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+  line-height: 20px;
+
+  cursor: pointer;
+  background-color: #ed9121;
+}
+
+.orientation {
+  background-color: #4fc978;
+}
+
+.button-delete {
+  background-color: #e94B3cff;
+}
+
 /*colors in the buttons when hovered*/
 .buttons:hover {
   background: rgba(169,169,169,0.3);
+}
+
+.orientation:hover {
+  background-color: #00A572;
+}
+
+.button-delete:hover {
+  background-color: #8E0404;
+}
+
+.button-ready:hover {
+  background-color: #C35817;
+}
+
+.abilities:hover {
+  background-color: #8E0404;
 }
 
 /*changes the enemy board highlight on hover*/
@@ -279,7 +537,7 @@ html {
 }
 
 .error {
-  
+
 }
 
 .turn {
@@ -287,15 +545,15 @@ html {
 }
 
 /*on correct attack fills hole with red tack*/
-.hit {
+.hit-top {
   position: relative;
   margin: 1.5px;
-  width: 15px;
-  height: 15px;
+  width: 30px;
+  height: 30px;
   top: 5px;
   left: 5px;
 
-  
+
   background: rgb(220,10,10);
   border: 1px solid red;
   border-radius: 100%;
@@ -303,27 +561,97 @@ html {
 
   display: table;
 
-  animation-name: expand;
-  animation-duration: 0.5s;
+  animation-name: expand-top;
+  animation-duration: 0.2s;
   animation-iteration-count: 1;
   animation-timing-function: linear;
   animation-fill-mode: none;
 
-  -webkit-animation-name: expand;
-  -webkit-animation-duration: 0.5s;
+  -webkit-animation-name: expand-top;
+  -webkit-animation-duration: 0.2s;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-timing-function: linear;
   -webkit-animation-fill-mode: none;
 
-  -moz-animation-name: expand;
-  -moz-animation-duration: 0.5s;
+  -moz-animation-name: expand-top;
+  -moz-animation-duration: 0.2s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: linear;
+  -moz-animation-fill-mode: none;
+}
+
+.hit-bottom {
+  position: relative;
+  margin: 1.5px;
+  width: 15px;
+  height: 15px;
+  top: 5px;
+  left: 5px;
+
+
+  background: rgb(220,10,10);
+  border: 1px solid red;
+  border-radius: 100%;
+  overflow: hidden;
+
+  display: table;
+
+  animation-name: expand-bottom;
+  animation-duration: 0.2s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+  animation-fill-mode: none;
+
+  -webkit-animation-name: expand-bottom;
+  -webkit-animation-duration: 0.2s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-fill-mode: none;
+
+  -moz-animation-name: expand-bottom;
+  -moz-animation-duration: 0.2s;
   -moz-animation-iteration-count: 1;
   -moz-animation-timing-function: linear;
   -moz-animation-fill-mode: none;
 }
 
 /*on miss attack fill hole with white tack*/
-.miss {
+.miss-top {
+  position: relative;
+  margin: 1.5px;
+  width: 30px;
+  height: 30px;
+  top: 5px;
+  left: 5px;
+
+  background: rgb(250,250,250);
+  border: 1px solid white;
+  border-radius: 100%;
+  overflow: hidden;
+
+  display: table;
+
+  animation: expand-top;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+  animation-fill-mode: none;
+
+  -webkit-animation: expand-top;
+  -webkit-animation-duration: 0.5s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-fill-mode: none;
+
+  -moz-animation: expand-top;
+  -moz-animation-duration: 0.5s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: linear;
+  -moz-animation-fill-mode: none;
+
+}
+
+.miss-bottom {
   position: relative;
   margin: 1.5px;
   width: 15px;
@@ -338,19 +666,19 @@ html {
 
   display: table;
 
-  animation: expand;
+  animation: expand-bottom;
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-timing-function: linear;
   animation-fill-mode: none;
 
-  -webkit-animation: expand;
+  -webkit-animation: expand-bottom;
   -webkit-animation-duration: 0.5s;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-timing-function: linear;
   -webkit-animation-fill-mode: none;
 
-  -moz-animation: expand;
+  -moz-animation: expand-bottom;
   -moz-animation-duration: 0.5s;
   -moz-animation-iteration-count: 1;
   -moz-animation-timing-function: linear;
@@ -358,7 +686,28 @@ html {
 
 }
 
-@keyframes expand {
+@keyframes expand-top {
+  0% {
+    width: 0px;
+    height: 0px;
+    top: 22px;
+    left: 22px;
+  }
+  50% {
+    width: 35px;
+    height: 35px;
+    top: 0px;
+    left: 0px;
+  }
+  100% {
+    width: 30px;
+    height: 30px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+@-webkit-keyframes expand-top {
   0% {
     width: 0px;
     height: 0px;
@@ -379,7 +728,7 @@ html {
   }
 }
 
-@-webkit-keyframes expand {
+@-moz-keyframes expand-top {
   0% {
     width: 0px;
     height: 0px;
@@ -400,7 +749,7 @@ html {
   }
 }
 
-@-moz-keyframes expand {
+@keyframes expand-bottom {
   0% {
     width: 0px;
     height: 0px;
@@ -419,29 +768,74 @@ html {
     top: 5px;
     left: 5px;
   }
+}
+
+@-webkit-keyframes expand-bottom {
+  0% {
+    width: 0px;
+    height: 0px;
+    top: 12.5px;
+    left: 12.5px;
+  }
+  50% {
+    width: 25px;
+    height: 25px;
+    top: 0px;
+    left: 0px;
+  }
+  100% {
+    width: 15px;
+    height: 15px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+@-moz-keyframes expand-bottom {
+  0% {
+    width: 0px;
+    height: 0px;
+    top: 12.5px;
+    left: 12.5px;
+  }
+  50% {
+    width: 25px;
+    height: 25px;
+    top: 0px;
+    left: 0px;
+  }
+  100% {
+    width: 15px;
+    height: 15px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+.chat{
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+    width: 55%;
+    margin-top: 4%;
+    margin-left: 3%;
+    align-items: flex-start;
+    flex: 1;
 }
 
 /*chat border area*/
 .chat-box {
-  /*position: absolute;*/
-  height: 335px;
-  bottom:30px;
-  margin-top: 30px;
-  left:2%;
-  width:100%;
-  border: 2px solid #73B1B7;
+  height: 70%;
+  left:1%;
+  width:40%;
+  border: 4px solid #73B1B7;
   border-radius: 10px;
   overflow: auto;
-
-}
-
-/*not used currently*/
-.chat-text {
 }
 
 * {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /*location for chat input location*/
@@ -459,4 +853,18 @@ html {
 .playerno {
   display: inline;
   /*float: right;*/
+}
+
+.budget-brick {
+  /*position: relative;*/
+  width: 210px;
+  height: 96px;
+  display: flex;
+  background: rgba(144,144,144,0.6);
+  border: 4px solid #73B1B7;
+  border-radius: 10px;
+  color: green;
+  margin-top: 4%;
+  align-items: center;
+  justify-content: center;
 }

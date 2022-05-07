@@ -97,6 +97,10 @@ class BattleshipGame():
     self.players[player_id] = 1
     self.player1 = []
     self.player2 = []
+    self.player1_ready = False;
+    self.player2_ready = False;
+    self.player1_timeouts = {'bomb':0, 'strafe':0, 'mine':0}
+    self.player2_timeouts = {'bomb':0, 'strafe':0, 'mine':0}
 
   def addPlayer(self, player_id = "2"):
     self.players[player_id] = player_id
@@ -154,14 +158,15 @@ class BattleshipGame():
         return False
     return True
 
-  def fire(self, locations):
+  def fire(self, locations, more=False):
     hit = False
     enemy_player = (~self.current_player) & 3
     for ship in self.getPlayer(enemy_player):
       for location in locations:
         if ship.hit(location):
           hit = True
-    self.current_player = enemy_player
+    if not more:
+      self.current_player = enemy_player
     return hit
 
   def getPlayer(self, player_id):
@@ -170,18 +175,22 @@ class BattleshipGame():
     else:
       return self.player2
 
-  def ready(self):
+  def ready(self, player_id):
+    if player_id == 1:
+      self.player1_ready = True;
+    else:
+      self.player2_ready = True;
     # Ensure that no more ships can be placed on either board
-    player1_spent = 0
-    player2_spent = 0
-    for s in self.player1:
-       player1_spent += s.get_len()
-    for s in self.player2:
-      player2_spent += s.get_len()
+    #player1_spent = 0
+    #player2_spent = 0
+    #for s in self.player1:
+    #   player1_spent += s.get_len()
+    #for s in self.player2:
+    #  player2_spent += s.get_len()
     
     # Return via boolean expression
-    return ((player1_spent + 2) > self.shipMaxSpaceCount
-      and (player2_spent + 2) > self.shipMaxSpaceCount)
+    #return ((player1_spent + 2) > self.shipMaxSpaceCount
+    #  and (player2_spent + 2) > self.shipMaxSpaceCount)
     
     #return (len(self.player1) == self.shipMaxPlaceCount 
     #  and len(self.player2) == self.shipMaxPlaceCount)
