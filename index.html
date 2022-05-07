@@ -1,0 +1,73 @@
+<!Doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Battle Ship</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/battleship.css">
+  <link rel="shortcut icon" href="#" />
+<script type="text/javascript" src="js/battleship.js"></script>
+  <script type="text/javascript" src="js/buttonclick.js"></script>
+</head>
+<body>
+  <h1 class="title">BATTLESHIP</h1>
+  <div id="main">
+    <!-- places blocks on screen but are invisible till triggered -->
+    <div class = "shiphover carrierhover"></div>
+    <div class = "shiphover battleshiphover"></div>
+    <div class = "shiphover cruiserhover"></div>
+    <div class = "shiphover submarinehover"></div>
+    <div class = "shiphover destroyerhover"></div>
+    <div class="panel">
+      <div class="topPanel">
+          <div class='buttons button1'>Carrier</div>
+          <div class='buttons button2'>Battleship</div>
+          <div class='buttons button3'>Cruiser</div>
+          <div class='buttons button4'>Submarine</div>
+          <div class='buttons button5'>Destroyer</div>
+      </div>
+      <div class='buttons-group'>
+        <div class="budget-brick" brick>Ship Budget: 0/17</div>
+        <div class="buttons-bottom orientation">Horizontal</div>
+        <div class="buttons-bottom button-delete">Delete</div>
+      </div>
+    </div>
+    <div class="board-group">
+          <div class="panel-abilities">
+      <div class="topPanel-abilities">
+        <div class='abilities abutton1'>Normal</div>
+        <div class='abilities abutton2'>Bomb</div>
+        <div class='abilities abutton3'>Strafe</div>
+        <div class='abilities abutton4'>Mine</div>
+      </div>
+    </div>
+    <div class="board">
+      <div class="displays">
+        <div class="bottom">
+          <ul class="grid-bottom"></ul>
+        </div>
+        <div class="top">
+          <ul class="grid-top"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="button-ready">Ready</div>
+    </div>
+    <div class="chat">
+      <div class='console'>
+        <span class='text'></span>
+      </div>
+    <div class="chat-box">
+      <div class="chat-text">
+        <ul id="messages"></ul>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="message" placeholder="Message">
+      <button id="sendbutton">Send</button>
+    </div>
+  </div>
+</body>
+</html>
