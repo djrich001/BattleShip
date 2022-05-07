@@ -25,6 +25,9 @@ players = {}
 player_numbers = {}
 player_ships = {}
 game_over = False
+# Hold previous shots
+player1_old_shots = []
+player2_old_shots = []
 
 @app.route('/css/<path:path>', methods=['GET'])
 def send_css(path):
@@ -194,7 +197,7 @@ def handle_fire(msg):
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
         # Get the current player ship list
-        player_ships = game.getPlayer(player_id)
+        player_ships = game.getPlayer(player_no)
         # Construct player shot availability
         shots = {'bomb': 0, 'strafe': 0, 'mine': 0}
         for ship in player_ships:
@@ -205,28 +208,42 @@ def handle_fire(msg):
                     shots['strafe'] += 1
                 elif ship.get_len() == 3:
                     shots['mine'] += 1
-        print(f"shots: {shots}")
+        print(f"Player: {player_no} shots: {shots}")
         locations = [int(msg["location"])]
         hit = False
         if player_no == game.current_player:
             if msg["shot"] == "normal":
+                # Set timeouts
+                if player_no == 1:
+                    game.player1_timeouts['bomb'] -= shots['bomb']
+                    game.player1_timeouts['strafe'] -= shots['strafe']
+                    game.player1_timeouts['mine'] -= shots['mine']
+                    print(f"Player 1 abilities: {game.player1_timeouts}")
+                elif player_no == 2:
+                    game.player2_timeouts['bomb'] -= shots['bomb']
+                    game.player2_timeouts['strafe'] -= shots['strafe']
+                    game.player2_timeouts['mine'] -= shots['mine']
+                    print(f"Player 2 abilities: {game.player2_timeouts}")
+                # Add location to old shots
+                check_locations(player_no, locations[0])
+                # Shoot
                 hit = game.fire([locations[0]])
                 send_shot(players[player_id], player_no, locations,
-                      hit, msg["shot"])
+                          hit, msg["shot"])
             elif msg["shot"] == "bomb":
                 # Check if shot type is available
-                if check_timeouts(game, player_no, 'bomb'):
+                if check_timeouts(game, player_no, 'bomb') and shots['bomb'] > 0:
                     # Set timeouts after checking them
                     if player_no == 1:
                         game.player1_timeouts['bomb'] = 5
                         game.player1_timeouts['strafe'] -= shots['strafe']
                         game.player1_timeouts['mine'] -= shots['mine']
+                        print(f"Player 1 abilities: {game.player1_timeouts}")
                     elif player_no == 2:
                         game.player2_timeouts['bomb'] = 5
                         game.player2_timeouts['strafe'] -= shots['strafe']
                         game.player2_timeouts['mine'] -= shots['mine']
-                    print(game.player1_timeouts)
-                    print(game.player2_timeouts)
+                        print(f"Player 2 abilities: {game.player2_timeouts}")
                     # Create list of locations to attack (Horizontal Row)
                     nums = []
                     location = locations[0]
@@ -236,26 +253,28 @@ def handle_fire(msg):
                     locations = nums
                     # Shoot at each location
                     for l in locations:
-                        hit = game.fire([l], more=(True if l != locations[-1] else False))
-                        send_shot(players[player_id], player_no, [l],
-                                  hit, msg["shot"])
+                        # Check if location has already been shot and add new shots to old shots
+                        if check_locations(player_no, l):
+                            hit = game.fire([l], more=(True if l != locations[-1] else False))
+                            send_shot(players[player_id], player_no, [l],
+                                      hit, msg["shot"])
                 else:
                     # Tell player that ability is unavailable
                     send_alert("Bomb ability currently unavailable.")
             elif msg["shot"] == "strafe":
                 # Check if shot type is available
-                if check_timeouts(game, player_no, 'bomb'):
+                if check_timeouts(game, player_no, 'strafe') and shots['strafe'] > 0:
                     # Set timeouts after checking them
                     if player_no == 1:
                         game.player1_timeouts['bomb'] -= shots['bomb']
                         game.player1_timeouts['strafe'] = 5
                         game.player1_timeouts['mine'] -= shots['mine']
+                        print(f"Player 1 abilities: {game.player1_timeouts}")
                     elif player_no == 2:
                         game.player2_timeouts['bomb'] -= shots['bomb']
                         game.player2_timeouts['strafe'] = 5
                         game.player2_timeouts['mine'] -= shots['mine']
-                    print(game.player1_timeouts)
-                    print(game.player2_timeouts)
+                        print(f"Player 2 abilities: {game.player2_timeouts}")
                     # Create list of locations to attack (Vertical Column)
                     nums = []
                     location = locations[0] % 10
@@ -264,23 +283,28 @@ def handle_fire(msg):
                     locations = nums
                     # Shoot at each location
                     for l in locations:
-                        hit = game.fire([l], more=(True if l != locations[-1] else False))
-                        send_shot(players[player_id], player_no, [l],
-                                  hit, msg["shot"])
+                        # Check if location has already been shot and add new shots to old shots
+                        if check_locations(player_no, l):
+                            hit = game.fire([l], more=(True if l != locations[-1] else False))
+                            send_shot(players[player_id], player_no, [l],
+                                      hit, msg["shot"])
+                else:
+                    # Tell player that ability is unavailable
+                    send_alert("Strafe ability currently unavailable.")
             elif msg["shot"] == "mine":
                 # Check if shot type is available
-                if check_timeouts(game, player_no, 'bomb'):
+                if check_timeouts(game, player_no, 'mine') and shots['mine'] > 0:
                     # Set timeouts after checking them
                     if player_no == 1:
                         game.player1_timeouts['bomb'] -= shots['bomb']
                         game.player1_timeouts['strafe'] -= shots['strafe']
                         game.player1_timeouts['mine'] = 5
+                        print(f"Player 1 abilities: {game.player1_timeouts}")
                     elif player_no == 2:
                         game.player2_timeouts['bomb'] -= shots['bomb']
                         game.player2_timeouts['strafe'] -= shots['strafe']
                         game.player2_timeouts['mine'] = 5
-                    print(game.player1_timeouts)
-                    print(game.player2_timeouts)
+                        print(f"Player 2 abilities: {game.player2_timeouts}")
                     # Create list of locations to attack (Square of 9 points)
                     nums = []
                     location = locations[0]
@@ -299,9 +323,14 @@ def handle_fire(msg):
                     locations = nums
                     # Shoot at each location
                     for l in locations:
-                        hit = game.fire([l], more=(True if l != locations[-1] else False))
-                        send_shot(players[player_id], player_no, [l],
-                                  hit, msg["shot"])
+                        # Check if location has already been shot and add new shots to old shots
+                        if check_locations(player_no, l):
+                            hit = game.fire([l], more=(True if l != locations[-1] else False))
+                            send_shot(players[player_id], player_no, [l],
+                                      hit, msg["shot"])
+                else:
+                    # Tell player that ability is unavailable
+                    send_alert("Mine ability currently unavailable.")
             if game.checkGameOver(3-player_no):
                 game_over = True
                 send_alert("GAME OVER, PLAYER " + str(player_no)
@@ -312,6 +341,28 @@ def handle_fire(msg):
     except ValueError as e:
         send_alert(str(e))
 
+def check_locations(player_no, location):
+    """Function to check if a location has already been shot."""
+    
+    # Get the old shot lists
+    global player1_old_shots
+    global player2_old_shots
+    
+    if player_no == 1:
+        # Check if shot in old shots
+        if location in player1_old_shots:
+            return False
+        # Append location
+        player1_old_shots.append(location)
+        print(player1_old_shots)
+    elif player_no == 2:
+        # Check if shot in old shots
+        if location in player2_old_shots:
+            return False
+        # Append location
+        player2_old_shots.append(location)
+        print(player2_old_shots)
+    return True
 
 def check_timeouts(game, player_id, shot_type):
     """Function to check whether or not an ability is available"""
@@ -320,10 +371,10 @@ def check_timeouts(game, player_id, shot_type):
     # Get the timeout dictionary
     if player_id == 1:
         timeouts = game.player1_timeouts
-        return game.player1_timeouts['bomb'] <= 0
+        return game.player1_timeouts[shot_type] <= 0
     elif player_id == 2:
         timeouts = game.player2_timeouts
-        return game.player2_timeouts['bomb'] <= 0
+        return game.player2_timeouts[shot_type] <= 0
 
 def alert_ship_placement(msg, rm=None):
     """Function to set and send ship placement"""
