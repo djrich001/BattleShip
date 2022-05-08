@@ -104,10 +104,6 @@ def handle_place_ship(msg):
     else: # If no exceptions arise, check if all ships have been placed
         alert_ship_placement(msg)
         send(msg)
-       # if game.ready():
-            #send_alert("All ships placed... Player 1 ready to fire!",
-                       #players[player_id])
-            #send({"type":"game-begun"},room=players[player_id])
 
 def handle_ready(msg):
     player_id = msg["id"]
@@ -125,7 +121,6 @@ def handle_delete_ship(msg):
         player_id = msg["id"]
         player_no = player_numbers[player_id]
         game = games[players[player_id]]
-#        ship =
         # Remove the ship from the game instance under the appropriate player
         game.removeShip(player_no, msg["shipId"])
     except ValueError as e:

@@ -6,7 +6,7 @@ var room;
 var player_id = Math.random().toString(36).substring(2);
 var player_no = 0;
 var shot_type = "normal";
-var boardWidth = 10; // Not currently a proper way to designate width.
+var boardWidth = 10;
 var active_orientation = "horz";
 var phase = "placement";
 var ship = null;
@@ -153,12 +153,6 @@ var enemyBoard = {
                 var num = parseInt($(this).attr("class").slice(19));
                 console.log(num);
                 fire(num);
-
-                //if (false == bool) {
-                  //$(".text").text(output.miss("You"));
-                  //$(this).children().addClass("miss");
-                //} else $(this).children().addClass("hit");
-                //$(".top").find(".points").off("mouseenter").off("mouseover").off("mouseleave").off("click");
             }
         });
     },
@@ -295,10 +289,6 @@ function deleteShipClient(location, point){
                 deleteShipServer(getId)
                 budget -= ships[passShipBudget];
                 $('.budget-brick').text("Ship Budget: " + budget + "/17");
-                // might return later - trying to make deleting a ship look like picking it up
-                //      ship = getShipName.charAt(0).toUpperCase() + getShipName.slice(1)
-                //      $('.carrierhover').css({'visibility':'visible'});
-                //      console.log(ship)
             });
         }
     }
@@ -356,29 +346,14 @@ function changeBoard(){
     $('.shiphover').remove();
     $('.panel').remove();
     $('.button-ready').remove();
-    //$('div').remove('.board-group')
    $('#main').prepend('<div class="board-group2"></div>');
    $('.board-group2').prepend('<div class="board"></div>');
    $('.board').prepend('<div class="displays"></div>');
    $('.top').prependTo($('.displays'));
    $('.panel-abilities').appendTo($('.displays'));
-   //$('.displays').append('<div class="panel-abilities"></div>');
-   //$('.panel-abilities').append('<div class="topPanel-abilities"></div>');
-   //$('.topPanel-abilities').append('<div class="abilities abutton1"></div>');
-   //$('.abutton1').text("Normal");
-   //$('.topPanel-abilities').append($('<div class="abilities abutton2"></div>'));
-   //$('.abutton2').text("Bomb");
-   //$('.topPanel-abilities').append($('<div class="abilities abutton3"></div>'));
-   //$('.abutton3').text("Strafe");
-   //$('.topPanel-abilities').append($('<div class="abilities abutton4"></div>'));
-   //$('.abutton4').text("Mine");
-   //$('.topPanel-abilities').append($('<div class="abilities abutton5"></div>'));
-   //$('.abutton5').text("???");
 
    $('.board-group2').append('<div class="board2"></div>');
    $('.bottom').prependTo($('.board2'));
-   //$('.board2').prepend('<div class="bottom"></div>');
-   //$('.bottom').prepend('<ul class="grid-bottom"></ul>');
    $('div').remove('.board-group')
    $('.top').css({'visibility':'visible'});
    $('.panel-abilities').css({

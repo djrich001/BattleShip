@@ -1,4 +1,3 @@
-import unittest
 from pprint import pprint
 
 boardWidth = 10
@@ -67,15 +66,6 @@ class Ship():
         return True
     return False
 
-#  def __str__(self):
-#    print("location = " + str(self._loc))
-#    print("length = " + str(self._len))
-#    print("shipId = " + str(self.shipId))
-#    for s in self._cells:
-#      print("cells = " + str(s))
-
-
-
 
 class Carrier(Ship):
   def __init__(self):
@@ -85,7 +75,6 @@ class Carrier(Ship):
   def checkAddSpecial(self, turns):
     if turns % 5 == 0:
       self.special = True
-
 
 
 class BattleshipGame():
@@ -180,99 +169,3 @@ class BattleshipGame():
       self.player1_ready = True;
     else:
       self.player2_ready = True;
-    # Ensure that no more ships can be placed on either board
-    #player1_spent = 0
-    #player2_spent = 0
-    #for s in self.player1:
-    #   player1_spent += s.get_len()
-    #for s in self.player2:
-    #  player2_spent += s.get_len()
-    
-    # Return via boolean expression
-    #return ((player1_spent + 2) > self.shipMaxSpaceCount
-    #  and (player2_spent + 2) > self.shipMaxSpaceCount)
-    
-    #return (len(self.player1) == self.shipMaxPlaceCount 
-    #  and len(self.player2) == self.shipMaxPlaceCount)
-
-
-
-class TestBattleship(unittest.TestCase):
-  def testShipCreation(self):
-    self.assertEqual(Ship()._loc, 0)
-    self.assertEqual(Ship(4)._loc, 4)
-    with self.assertRaises(ValueError):
-       Ship(200)
-    self.assertEqual(Ship(10, 'destroyer')._len,2)
-    self.assertTrue(Ship(50, direction="horizontal").checkExists(54))
-    self.assertTrue(Ship(50, direction="vertical").checkExists(90))
-    self.assertFalse(Ship(50).checkExists(55))
-    with self.assertRaises(ValueError):
-       Ship(99)
-    with self.assertRaises(ValueError):
-       Ship(80, direction="vertical")
-
-  def testShipHits(self):
-    testShip = Ship(50)
-    self.assertFalse(testShip.hit(1))
-    self.assertTrue(testShip.hit(51))
-    self.assertFalse(testShip.checkExists(51))
-    self.assertFalse(testShip.hit(51))
-    testShip.hit(50)
-    testShip.hit(52)
-    testShip.hit(53)
-    testShip.hit(54)
-    self.assertTrue(testShip.dead())
-
-  def testBattleshipGameCreation(self):
-    testShip = Ship(0)
-    testGame = BattleshipGame()
-    self.assertTrue(testGame.addShip(1, testShip))
-    with self.assertRaises(ValueError): # Check that collisions raise an error.
-      testGame.addShip(1, testShip)
-    testGame.addShip(1, Ship(10))
-    testGame.addShip(1, Ship(20))
-    testGame.addShip(1, Ship(30))
-    testGame.addShip(1, Ship(40))
-    with self.assertRaises(ValueError): # check that only 5 ships can be added per player.
-      testGame.addShip(1, Ship(50))
-
-    self.assertTrue(testGame.addShip(2, Ship(0)))
-    with self.assertRaises(ValueError): # Check that collisions raise an error.
-      testGame.addShip(2, Ship(0))
-    testGame.addShip(2, Ship(10))
-    testGame.addShip(2, Ship(20))
-    testGame.addShip(2, Ship(30))
-    testGame.addShip(2, Ship(40))
-    with self.assertRaises(ValueError): # check that only 5 ships can be added per player.
-      testGame.addShip(2, Ship(50))
-
-    with self.assertRaises(ValueError): # check that only 5 ships can be added per player.
-      testGame.addShip(2, Ship(2, direction="horizontal"))
-
-  def testBattleshipGameLogic(self):
-    testGame2 = BattleshipGame()
-    self.assertFalse(testGame2.ready())
-    for i in [0,10,20,30,40]:
-      testGame2.addShip(1, Ship(i))
-    for ship in testGame2.player1:
-      for cell in ship._cells:
-        ship.hit(cell)
-    self.assertTrue(testGame2.checkGameOver(1))
-
-    for i in [50,60,70,80,90]:
-      testGame2.addShip(2, Ship(i))
-    self.assertTrue(testGame2.ready())
-    self.assertTrue(testGame2.fire([50,51,52,53,54]))
-    self.assertTrue(testGame2.player2[0].dead())
-
-
-
-
-
-
-def main():
-  unittest.main()
-
-if __name__ == '__main__':
-  main()
